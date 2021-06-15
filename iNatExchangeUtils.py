@@ -24,3 +24,19 @@ def displayMessage(messages, msg):
     else:
         print(msg)
     return
+
+
+def checkField(table, field_name):
+    desc = arcpy.Describe(table)
+    for field in desc.fields:
+        if field.name == field_name:
+            return True
+    return False
+
+
+def fieldType(table, field_name):
+    desc = arcpy.Describe(table)
+    for field in desc.fields:
+        if field.name == field_name:
+            return field.type
+    return None
