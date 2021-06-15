@@ -24,3 +24,4 @@ def displayMessage(messages, msg):
     else:
         print(msg)
     return
+
