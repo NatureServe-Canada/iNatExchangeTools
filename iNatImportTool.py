@@ -25,28 +25,16 @@ class iNatImportTool:
         # make variables for parms
         iNatExchangeUtils.displayMessage(messages, 'Processing parameters')
         #param_geodatabase = parameters[0].valueAsText
-        project_path = 'C:/GIS/iNatExchange'
-        input_folder = 'Input'
-        input_label = 'inaturalist-ca-5-20210603-1622752843'
-        input_path = project_path + '/' + input_folder + '/' + input_label
-        input_prefix = input_label + '-'
-        output_folder = 'Output'
-        output_path = project_path + '/' + output_folder
-        if not arcpy.Exists(output_path):
-            arcpy.management.CreateFolder(project_path, output_folder)
-        if not arcpy.Exists(output_path + '/' + input_label + '.gdb'):
-            arcpy.management.CreateFileGDB(output_path, input_label + '.gdb')
-        arcpy.env.workspace = output_path + '/' + input_label + '.gdb'
-        #prov_abbr = 'YT'
-        #prov_folder = output_folder + '/' + prov_abbr
-        #prov_gdb = prov_folder + '/' + prov_abbr + '.gdb'
-        ## comma-separated list of quoted values
-        #prov_name = "'Yukon'"
+        if not arcpy.Exists(iNatExchangeUtils.output_path):
+            arcpy.management.CreateFolder(iNatExchangeUtils.project_path, iNatExchangeUtils.output_folder)
+        if not arcpy.Exists(iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb'):
+            arcpy.management.CreateFileGDB(iNatExchangeUtils.output_path, iNatExchangeUtils.input_label + '.gdb')
+        arcpy.env.workspace = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb'
 
         # import observations, giving preference to private coordinates where available
         iNatExchangeUtils.displayMessage(messages, 'Importing observations')
-        arcpy.conversion.TableToTable(input_path + '/' + input_prefix + 'observations.csv', arcpy.env.workspace,
-                                      'obs_temp')
+        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+                                      'observations.csv', arcpy.env.workspace, 'obs_temp')
         iNatExchangeUtils.displayMessage(messages,
                                          'Plotting observations, preferring private coordinates where available')
         arcpy.management.AddField('obs_temp', 'lon', 'DOUBLE')

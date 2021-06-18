@@ -10,6 +10,28 @@
 
 import arcpy
 
+prov_dict = {'NL': 'Newfoundland and Labrador',
+             'NS': 'Nova Scotia',
+             'NB': 'New Brunswick',
+             'PE': 'Prince Edward Island',
+             'QC': 'Quebec',
+             'ON': 'Ontario',
+             'MB': 'Manitoba',
+             'SK': 'Saskatchewan',
+             'AB': 'Alberta',
+             'BC': 'British Columbia',
+             'YT': 'Yukon',
+             'NT': 'Northwest Territories',
+             'NU': 'Nunavut'}
+project_path = 'C:/GIS/iNatExchange'
+input_folder = 'Input'
+input_label = 'inaturalist-ca-5-20210603-1622752843'
+input_path = project_path + '/' + input_folder + '/' + input_label
+input_prefix = input_label + '-'
+output_folder = 'Output'
+output_path = project_path + '/' + output_folder
+jur_buffer = 'C:/GIS/iNatExchangeTools/iNatExchangeTools.gdb/JurisdictionBufferWGS84'
+marine_eez = 'C:/GIS/iNatExchangeTools/iNatExchangeTools.gdb/MarineBufferWGS84'
 
 def displayMessage(messages, msg):
     """Output message to arcpy message object or to Python standard output."""
