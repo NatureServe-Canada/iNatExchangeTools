@@ -84,18 +84,10 @@ class iNatProvinceExportTool:
         arcpy.management.AddIndex(prov_gdb + '/comments', ['parent_id'], 'comments_parent_id_idx')
         arcpy.conversion.TableToTable('comments', prov_folder, 'comments.csv')
 
-        # conservation_statuses
-        iNatExchangeUtils.displayMessage(messages, 'Exporting conservation_statuses')
-        arcpy.conversion.TableToTable('conservation_statuses', prov_gdb, 'conservation_statuses')
-        arcpy.management.AddIndex(prov_gdb + '/conservation_statuses', ['id'], 'cs_id_idx')
-        arcpy.management.AddIndex(prov_gdb + '/conservation_statuses', ['taxon_id'], 'cs_taxon_id_idx')
-        arcpy.management.AddIndex(prov_gdb + '/conservation_statuses', ['user_id'], 'cs_user_id_idx')
-        arcpy.conversion.TableToTable('conservation_statuses', prov_folder, 'conservation_statuses.csv')
-
         # identifications
         iNatExchangeUtils.displayMessage(messages, 'Exporting identifications')
         arcpy.management.MakeFeatureLayer('identifications', 'identifications_lyr')
-        arcpy.management.AddJoin('identifications_lyt', 'observation_id', prov_gdb + '/observations', 'id',
+        arcpy.management.AddJoin('identifications_lyr', 'observation_id', prov_gdb + '/observations', 'id',
                                  'KEEP_COMMON')
         arcpy.management.SelectLayerByAttribute('identifications_lyr')
         arcpy.management.RemoveJoin('identifications_lyr', 'observations')
@@ -122,7 +114,7 @@ class iNatProvinceExportTool:
                                   'ofvs_observation_field_id_idx')
         arcpy.conversion.TableToTable('observation_field_values', prov_folder, 'observation_field_values.csv')
 
-        # observation_fields
+        # observation_fields (all records, no subsetting)
         iNatExchangeUtils.displayMessage(messages, 'Exporting observation_fields')
         arcpy.conversion.TableToTable('observation_fields', prov_gdb, 'observation_fields')
         arcpy.management.AddIndex(prov_gdb + '/observation_fields', ['id'], 'observation_fields_id_idx')
@@ -145,17 +137,88 @@ class iNatProvinceExportTool:
 
         # taxa
         iNatExchangeUtils.displayMessage(messages, 'Exporting taxa')
-        arcpy.conversion.TableToTable('taxa', prov_gdb, 'taxa')
+        arcpy.management.MakeFeatureLayer('taxa', 'taxa_lyr')
+        arcpy.management.AddJoin('taxa_lyr', 'id', prov_gdb + '/observations', 'taxon_id', 'KEEP_COMMON')
+        arcpy.management.SelectLayerByAttribute('taxa_lyr')
+        arcpy.management.RemoveJoin('taxa_lyr', 'observations')
+        arcpy.management.AddJoin('taxa_lyr', 'id', prov_gdb + '/identifications', 'taxon_id', 'KEEP_COMMON')
+        arcpy.management.SelectLayerByAttribute('taxa_lyr', 'ADD_TO_SELECTION')
+        arcpy.management.RemoveJoin('taxa_lyr', 'identifications')
+        arcpy.conversion.TableToTable('taxa_lyr', prov_gdb, 'taxa')
         arcpy.management.AddIndex(prov_gdb + '/taxa', ['id'], 'taxa_id_idx')
         arcpy.conversion.TableToTable('taxa', prov_folder, 'taxa.csv')
 
-        # users
+        # conservation_statuses
+        iNatExchangeUtils.displayMessage(messages, 'Exporting conservation_statuses')
+        arcpy.management.MakeFeatureLayer('conservation_statuses', 'conservation_statuses_lyr')
+        arcpy.management.AddJoin('conservation_statuses_lyr', 'taxon_id', prov_gdb + '/taxa', 'id', 'KEEP_COMMON')
+        arcpy.management.SelectLayerByAttribute('conservation_statuses_lyr')
+        arcpy.management.RemoveJoin('conservation_statuses_lyr', 'taxa')
+        arcpy.conversion.TableToTable('conservation_statuses_lyr', prov_gdb, 'conservation_statuses')
+        arcpy.management.AddIndex(prov_gdb + '/conservation_statuses', ['id'], 'cs_id_idx')
+        arcpy.management.AddIndex(prov_gdb + '/conservation_statuses', ['taxon_id'], 'cs_taxon_id_idx')
+        arcpy.management.AddIndex(prov_gdb + '/conservation_statuses', ['user_id'], 'cs_user_id_idx')
+        arcpy.conversion.TableToTable('conservation_statuses', prov_folder, 'conservation_statuses.csv')
+
+        # users (all records, no subsetting)
         iNatExchangeUtils.displayMessage(messages, 'Exporting users')
         arcpy.conversion.TableToTable('users', prov_gdb, 'users')
         arcpy.management.AddIndex(prov_gdb + '/users', ['id'], 'users_id_idx')
         arcpy.conversion.TableToTable('users', prov_folder, 'users.csv')
 
         # add relationships to output gdb
+        iNatExchangeUtils.displayMessage(messages, 'Adding relationships to output gdb')
+        arcpy.env.workspace = prov_gdb
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/observations', prov_gdb + '/annotations',
+                                                 'observations_annotations', 'SIMPLE', 'annotations', 'observations',
+                                                 'NONE', 'ONE_TO_MANY', 'NONE', 'id', 'resource_id')
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/observations', prov_gdb + '/comments',
+                                                 'observations_comments', 'SIMPLE', 'comments', 'observations', 'NONE',
+                                                 'ONE_TO_MANY', 'NONE', 'id', 'parent_id')
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/taxa', prov_gdb + '/conservation_statuses',
+                                                 'taxa_conservation_statuses', 'SIMPLE', 'conservation_statuses',
+                                                 'taxa', 'NONE', 'ONE_TO_MANY', 'NONE', 'id', 'taxon_id')
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/users', prov_gdb + '/conservation_statuses',
+                                                 'users_conservation_statuses', 'SIMPLE', 'conservation_statuses',
+                                                 'users', 'NONE', 'ONE_TO_MANY', 'NONE', 'id', 'user_id')
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/observations', prov_gdb + '/identifications',
+                                                 'observations_identifications', 'SIMPLE', 'identifications',
+                                                 'observations', 'NONE', 'ONE_TO_MANY', 'NONE', 'id', 'observation_id')
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/taxa', prov_gdb + '/identifications',
+                                                 'taxa_identifications', 'SIMPLE', 'identifications', 'taxa', 'NONE',
+                                                 'ONE_TO_MANY', 'NONE', 'id', 'taxon_id')
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/users', prov_gdb + '/identifications',
+                                                 'users_identifications', 'SIMPLE', 'identifications', 'users', 'NONE',
+                                                 'ONE_TO_MANY', 'NONE', 'id', 'user_id')
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/observations', prov_gdb + '/observation_field_values',
+                                                 'observations_observation_field_values', 'SIMPLE',
+                                                 'observation_field_values', 'observations', 'NONE', 'ONE_TO_MANY',
+                                                 'NONE', 'id', 'observation_id')
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/observation_fields',
+                                                 prov_gdb + '/observation_field_values',
+                                                 'observation_fields_observation_field_values', 'SIMPLE',
+                                                 'observation_field_values', 'observation_fields', 'NONE',
+                                                 'ONE_TO_MANY', 'NONE', 'id', 'observation_field_id')
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/users', prov_gdb + '/observation_field_values',
+                                                 'users_observation_field_values', 'SIMPLE',
+                                                 'observation_field_values', 'users', 'NONE', 'ONE_TO_MANY', 'NONE',
+                                                 'id', 'user_id')
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/users', prov_gdb + '/observations', 'users_observations',
+                                                 'SIMPLE', 'observations', 'users', 'NONE', 'ONE_TO_MANY', 'NONE',
+                                                 'id', 'user_id')
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/users', prov_gdb + '/observation_fields',
+                                                 'users_observation_fields', 'SIMPLE', 'observation_fields', 'users',
+                                                 'NONE', 'ONE_TO_MANY', 'NONE', 'id', 'user_id')
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/users', prov_gdb + '/quality_metrics',
+                                                 'users_quality_metrics', 'SIMPLE', 'quality_metrics', 'users', 'NONE',
+                                                 'ONE_TO_MANY', 'NONE', 'id', 'user_id')
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/observations', prov_gdb + '/quality_metrics',
+                                                 'observations_quality_metrics', 'SIMPLE', 'quality_metrics',
+                                                 'observations', 'NONE', 'ONE_TO_MANY', 'NONE', 'id', 'observation_id')
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/taxa', prov_gdb + '/observations',
+                                                 'taxa_observations', 'SIMPLE', 'observations',
+                                                 'taxa', 'NONE', 'ONE_TO_MANY', 'NONE', 'id', 'taxon_id')
+
 
 # controlling process
 if __name__ == '__main__':
