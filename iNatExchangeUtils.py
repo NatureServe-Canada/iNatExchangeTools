@@ -32,6 +32,8 @@ output_folder = 'Output'
 output_path = project_path + '/' + output_folder
 jur_buffer = 'C:/GIS/iNatExchangeTools/iNatExchangeTools.gdb/JurisdictionBufferWGS84'
 marine_eez = 'C:/GIS/iNatExchangeTools/iNatExchangeTools.gdb/MarineBufferWGS84'
+date_label = '3June2021'
+
 
 def displayMessage(messages, msg):
     """Output message to arcpy message object or to Python standard output."""

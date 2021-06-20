@@ -31,27 +31,55 @@ class iNatImportTool:
             arcpy.management.CreateFileGDB(iNatExchangeUtils.output_path, iNatExchangeUtils.input_label + '.gdb')
         arcpy.env.workspace = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb'
 
-        # import observations, giving preference to private coordinates where available
-        iNatExchangeUtils.displayMessage(messages, 'Importing observations')
-        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
-                                      'observations.csv', arcpy.env.workspace, 'obs_temp')
-        iNatExchangeUtils.displayMessage(messages,
-                                         'Plotting observations, preferring private coordinates where available')
-        arcpy.management.AddField('obs_temp', 'lon', 'DOUBLE')
-        arcpy.management.AddField('obs_temp', 'lat', 'DOUBLE')
-        expr = '''
-def get_coord(coord, private_coord):
-    if private_coord:
-        return private_coord
-    else:
-        return coord'''
-        arcpy.management.CalculateField('obs_temp', 'lon', 'get_coord(!longitude!, !private_longitude!)', 'PYTHON3',
-                                        expr)
-        arcpy.management.CalculateField('obs_temp', 'lat', 'get_coord(!latitude!, !private_latitude!)', 'PYTHON3',
-                                        expr)
-        arcpy.management.XYTableToPoint('obs_temp', 'observations', 'lon', 'lat')
-#        arcpy.management.Delete('obs_temp')
+#        # import observations, giving preference to private coordinates where available
+#        iNatExchangeUtils.displayMessage(messages, 'Importing observations')
+#        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+#                                      'observations.csv', arcpy.env.workspace, 'obs_temp')
+#        iNatExchangeUtils.displayMessage(messages,
+#                                         'Plotting observations, preferring private coordinates where available')
+#        arcpy.management.AddField('obs_temp', 'lon', 'DOUBLE')
+#        arcpy.management.AddField('obs_temp', 'lat', 'DOUBLE')
+#        expr = '''
+#def get_coord(coord, private_coord):
+#    if private_coord:
+#        return private_coord
+#    else:
+#        return coord'''
+#        arcpy.management.CalculateField('obs_temp', 'lon', 'get_coord(!longitude!, !private_longitude!)', 'PYTHON3',
+#                                        expr)
+#        arcpy.management.CalculateField('obs_temp', 'lat', 'get_coord(!latitude!, !private_latitude!)', 'PYTHON3',
+#                                        expr)
+#        arcpy.management.XYTableToPoint('obs_temp', 'observations', 'lon', 'lat')
+##        arcpy.management.Delete('obs_temp')
 
+        # import other tables
+        iNatExchangeUtils.displayMessage(messages, 'Importing annotations')
+        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+                                      'annotations.csv', arcpy.env.workspace, 'annotations')
+        iNatExchangeUtils.displayMessage(messages, 'Importing comments')
+        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+                                      'comments.csv', arcpy.env.workspace, 'comments')
+        iNatExchangeUtils.displayMessage(messages, 'Importing conservation_statuses')
+        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+                                      'conservation_statuses.csv', arcpy.env.workspace, 'conservation_statuses')
+        iNatExchangeUtils.displayMessage(messages, 'Importing identifications')
+        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+                                      'identifications.csv', arcpy.env.workspace, 'identifications')
+        iNatExchangeUtils.displayMessage(messages, 'Importing observation_field_values')
+        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+                                      'observation_field_values.csv', arcpy.env.workspace, 'observation_field_values')
+        iNatExchangeUtils.displayMessage(messages, 'Importing observation_fields')
+        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+                                      'observation_fields.csv', arcpy.env.workspace, 'observation_fields')
+        iNatExchangeUtils.displayMessage(messages, 'Importing quality_metrics')
+        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+                                      'quality_metrics.csv', arcpy.env.workspace, 'quality_metrics')
+        iNatExchangeUtils.displayMessage(messages, 'Importing taxa')
+        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+                                      'taxa.csv', arcpy.env.workspace, 'taxa')
+        iNatExchangeUtils.displayMessage(messages, 'Importing users')
+        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+                                      'users.csv', arcpy.env.workspace, 'users')
 
 # controlling process
 if __name__ == '__main__':
