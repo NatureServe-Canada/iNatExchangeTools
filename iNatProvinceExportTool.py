@@ -29,6 +29,7 @@ class iNatProvinceExportTool:
         prov_name = iNatExchangeUtils.prov_dict[param_province]
         work_gdb = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb'
         arcpy.env.workspace = work_gdb
+        arcpy.gp.overwriteOutput = True
 
         # make folder and gdb for province
         prov_folder = iNatExchangeUtils.output_path + '/' + param_province
@@ -36,7 +37,7 @@ class iNatProvinceExportTool:
             arcpy.management.CreateFolder(iNatExchangeUtils.output_path, param_province)
         prov_gdb = prov_folder + '/iNat_' + param_province + '_' + iNatExchangeUtils.date_label + '.gdb'
         if not arcpy.Exists(prov_gdb):
-            arcpy.management.CreateFileGDB(prov_folder, param_province + '.gdb')
+            arcpy.management.CreateFileGDB(prov_folder, '/iNat_' + param_province + '_' + iNatExchangeUtils.date_label + '.gdb')
 
         # export observations - those named as being in province, or intersecting 32km terrestrial buffer or 200nm
         # Canadian EEZ marine buffer
@@ -59,112 +60,143 @@ class iNatProvinceExportTool:
         arcpy.management.AddIndex(prov_gdb + '/observations', ['id'], 'observations_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/observations', ['taxon_id'], 'observations_taxon_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/observations', ['user_id'], 'observations_user_id_idx')
+        if arcpy.Exists(prov_folder + '/iNat_observations_' + iNatExchangeUtils.date_label + '.csv'):
+            arcpy.management.Delete(prov_folder + '/iNat_observations_' + iNatExchangeUtils.date_label + '.csv')
         arcpy.conversion.TableToTable('obs_lyr', prov_folder,
-                                      'iNat_observations_' + iNatExchaneUtils.date_label + '.csv')
+                                      'iNat_observations_' + iNatExchangeUtils.date_label + '.csv')
 
         # annotations - assume all are resource_type='Observation'
         iNatExchangeUtils.displayMessage(messages, 'Exporting annotations')
-        arcpy.management.MakeFeatureLayer('annotations', 'annotations_lyr')
-        arcpy.management.AddJoin('annotations_lyr', 'resource_id', prov_gdb + '/observations', 'id', 'KEEP_COMMON')
-        arcpy.management.SelectLayerByAttribute('annotations_lyr')
-        arcpy.management.RemoveJoin('annotations_lyr', 'observations')
-        arcpy.conversion.TableToTable('annotations_lyr', prov_gdb, 'annotations')
+        arcpy.management.MakeTableView('annotations', 'annotations_vw')
+        arcpy.management.AddJoin('annotations_vw', 'resource_id', prov_gdb + '/observations', 'id', 'KEEP_COMMON')
+        arcpy.management.SelectLayerByAttribute('annotations_vw')
+        arcpy.management.RemoveJoin('annotations_vw', 'observations')
+        arcpy.conversion.TableToTable('annotations_vw', prov_gdb, 'annotations')
         arcpy.management.AddIndex(prov_gdb + '/annotations', ['id'], 'annotations_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/annotations', ['resource_id'], 'annotations_resource_id_idx')
-        arcpy.conversion.TableToTable('annotations', prov_folder, 'annotations.csv')
+        if arcpy.Exists(prov_folder + '/iNat_annotations_' + iNatExchangeUtils.date_label + '.csv'):
+            arcpy.management.Delete(prov_folder + '/iNat_annotations_' + iNatExchangeUtils.date_label + '.csv')
+        arcpy.conversion.TableToTable('annotations_vw', prov_folder, 'iNat_annotations_' +
+                                      iNatExchangeUtils.date_label + '.csv')
 
         # comments - assume all are parent_type='Observation'
         iNatExchangeUtils.displayMessage(messages, 'Exporting comments')
-        arcpy.management.MakeFeatureLayer('comments', 'comments_lyr')
-        arcpy.management.AddJoin('comments_lyr', 'parent_id', prov_gdb + '/observations', 'id', 'KEEP_COMMON')
-        arcpy.management.SelectLayerByAttribute('comments_lyr')
-        arcpy.management.RemoveJoin('comments_lyr', 'observations')
-        arcpy.conversion.TableToTable('comments_lyr', prov_gdb, 'comments')
+        arcpy.management.MakeTableView('comments', 'comments_vw')
+        arcpy.management.AddJoin('comments_vw', 'parent_id', prov_gdb + '/observations', 'id', 'KEEP_COMMON')
+        arcpy.management.SelectLayerByAttribute('comments_vw')
+        arcpy.management.RemoveJoin('comments_vw', 'observations')
+        arcpy.conversion.TableToTable('comments_vw', prov_gdb, 'comments')
         arcpy.management.AddIndex(prov_gdb + '/comments', ['id'], 'comments_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/comments', ['parent_id'], 'comments_parent_id_idx')
-        arcpy.conversion.TableToTable('comments', prov_folder, 'comments.csv')
+        if arcpy.Exists(prov_folder + '/iNat_comments_' + iNatExchangeUtils.date_label + '.csv'):
+            arcpy.management.Delete(prov_folder + '/iNat_comments_' + iNatExchangeUtils.date_label + '.csv')
+        arcpy.conversion.TableToTable('comments_vw', prov_folder, 'iNat_comments_' + iNatExchangeUtils.date_label +
+                                      '.csv')
 
         # identifications
         iNatExchangeUtils.displayMessage(messages, 'Exporting identifications')
-        arcpy.management.MakeFeatureLayer('identifications', 'identifications_lyr')
-        arcpy.management.AddJoin('identifications_lyr', 'observation_id', prov_gdb + '/observations', 'id',
+        arcpy.management.MakeTableView('identifications', 'identifications_vw')
+        arcpy.management.AddJoin('identifications_vw', 'observation_id', prov_gdb + '/observations', 'id',
                                  'KEEP_COMMON')
-        arcpy.management.SelectLayerByAttribute('identifications_lyr')
-        arcpy.management.RemoveJoin('identifications_lyr', 'observations')
-        arcpy.conversion.TableToTable('identifications_lyr', prov_gdb, 'identifications')
+        arcpy.management.SelectLayerByAttribute('identifications_vw')
+        arcpy.management.RemoveJoin('identifications_vw', 'observations')
+        arcpy.conversion.TableToTable('identifications_vw', prov_gdb, 'identifications')
         arcpy.management.AddIndex(prov_gdb + '/identifications', ['id'], 'identifications_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/identifications', ['observation_id'],
                                   'identifications_observation_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/identifications', ['taxon_id'], 'identifications_taxon_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/identifications', ['user_id'], 'identifications_user_id_idx')
-        arcpy.conversion.TableToTable('identifications', prov_folder, 'identifications.csv')
+        if arcpy.Exists(prov_folder + '/iNat_identifications_' + iNatExchangeUtils.date_label + '.csv'):
+            arcpy.management.Delete(prov_folder + '/iNat_identifications_' + iNatExchangeUtils.date_label + '.csv')
+        arcpy.conversion.TableToTable('identifications_vw', prov_folder, 'iNat_identifications_' +
+                                      iNatExchangeUtils.date_label + '.csv')
 
         # observation_field_values
         iNatExchangeUtils.displayMessage(messages, 'Exporting observation_field_values')
-        arcpy.management.MakeFeatureLayer('observation_field_values', 'observation_field_values_lyr')
-        arcpy.management.AddJoin('observation_field_values_lyr', 'observation_id', prov_gdb + '/observations', 'id',
+        arcpy.management.MakeTableView('observation_field_values', 'observation_field_values_vw')
+        arcpy.management.AddJoin('observation_field_values_vw', 'observation_id', prov_gdb + '/observations', 'id',
                                  'KEEP_COMMON')
-        arcpy.management.SelectLayerByAttribute('observation_field_values_lyr')
-        arcpy.management.RemoveJoin('observation_field_values_lyr', 'observations')
-        arcpy.conversion.TableToTable('observation_field_values_lyr', prov_gdb, 'observation_field_values')
+        arcpy.management.SelectLayerByAttribute('observation_field_values_vw')
+        arcpy.management.RemoveJoin('observation_field_values_vw', 'observations')
+        arcpy.conversion.TableToTable('observation_field_values_vw', prov_gdb, 'observation_field_values')
         arcpy.management.AddIndex(prov_gdb + '/observation_field_values', ['id'], 'ofvs_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/observation_field_values', ['observation_id'],
                                   'ofvs_observation_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/observation_field_values', ['observation_field_id'],
                                   'ofvs_observation_field_id_idx')
-        arcpy.conversion.TableToTable('observation_field_values', prov_folder, 'observation_field_values.csv')
+        if arcpy.Exists(prov_folder + '/iNat_observation_field_values_' + iNatExchangeUtils.date_label + '.csv'):
+            arcpy.management.Delete(prov_folder + '/iNat_observation_field_values_' +iNatExchangeUtils.date_label +
+                                    '.csv')
+        arcpy.conversion.TableToTable('observation_field_values_vw', prov_folder, 'iNat_observation_field_values_' +
+                                      iNatExchangeUtils.date_label + '.csv')
 
         # observation_fields (all records, no subsetting)
         iNatExchangeUtils.displayMessage(messages, 'Exporting observation_fields')
         arcpy.conversion.TableToTable('observation_fields', prov_gdb, 'observation_fields')
         arcpy.management.AddIndex(prov_gdb + '/observation_fields', ['id'], 'observation_fields_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/observation_fields', ['user_id'], 'observation_fields_user_id_idx')
-        arcpy.conversion.TableToTable('observation_fields', prov_folder, 'observation_fields.csv')
+        if arcpy.Exists(prov_folder + '/iNat_observation_fields_' + iNatExchangeUtils.date_label + '.csv'):
+            arcpy.management.Delete(prov_folder + '/iNat_observation_fields_' +iNatExchangeUtils.date_label +
+                                    '.csv')
+        arcpy.conversion.TableToTable('observation_fields', prov_folder, 'iNat_observation_fields_' +
+                                      iNatExchangeUtils.date_label + '.csv')
 
         # quality_metrics
         iNatExchangeUtils.displayMessage(messages, 'Exporting quality_metrics')
-        arcpy.management.MakeFeatureLayer('quality_metrics', 'quality_metrics_lyr')
-        arcpy.management.AddJoin('quality_metrics_lyr', 'observation_id', prov_gdb + '/observations', 'id',
+        arcpy.management.MakeTableView('quality_metrics', 'quality_metrics_vw')
+        arcpy.management.AddJoin('quality_metrics_vw', 'observation_id', prov_gdb + '/observations', 'id',
                                  'KEEP_COMMON')
-        arcpy.management.SelectLayerByAttribute('quality_metrics_lyr')
-        arcpy.management.RemoveJoin('quality_metrics_lyr', 'observations')
-        arcpy.conversion.TableToTable('quality_metrics_lyr', prov_gdb, 'quality_metrics')
+        arcpy.management.SelectLayerByAttribute('quality_metrics_vw')
+        arcpy.management.RemoveJoin('quality_metrics_vw', 'observations')
+        arcpy.conversion.TableToTable('quality_metrics_vw', prov_gdb, 'quality_metrics')
         arcpy.management.AddIndex(prov_gdb + '/quality_metrics', ['id'], 'quality_metrics_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/quality_metrics', ['observation_id'],
                                   'quality_metrics_observation_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/quality_metrics', ['user_id'], 'quality_metrics_user_id_idx')
-        arcpy.conversion.TableToTable('quality_metrics', prov_folder, 'quality_metrics.csv')
+        if arcpy.Exists(prov_folder + '/iNat_quality_metrics_' + iNatExchangeUtils.date_label + '.csv'):
+            arcpy.management.Delete(prov_folder + '/iNat_quality_metrics_' + iNatExchangeUtils.date_label + '.csv')
+        arcpy.conversion.TableToTable('quality_metrics_vw', prov_folder, 'iNat_quality_metrics_' +
+                                      iNatExchangeUtils.date_label + '.csv')
 
         # taxa
         iNatExchangeUtils.displayMessage(messages, 'Exporting taxa')
-        arcpy.management.MakeFeatureLayer('taxa', 'taxa_lyr')
-        arcpy.management.AddJoin('taxa_lyr', 'id', prov_gdb + '/observations', 'taxon_id', 'KEEP_COMMON')
-        arcpy.management.SelectLayerByAttribute('taxa_lyr')
-        arcpy.management.RemoveJoin('taxa_lyr', 'observations')
-        arcpy.management.AddJoin('taxa_lyr', 'id', prov_gdb + '/identifications', 'taxon_id', 'KEEP_COMMON')
-        arcpy.management.SelectLayerByAttribute('taxa_lyr', 'ADD_TO_SELECTION')
-        arcpy.management.RemoveJoin('taxa_lyr', 'identifications')
-        arcpy.conversion.TableToTable('taxa_lyr', prov_gdb, 'taxa')
+        arcpy.management.MakeTableView('taxa', 'taxa_vw')
+        arcpy.management.AddJoin('taxa_vw', 'id', prov_gdb + '/observations', 'taxon_id', 'KEEP_COMMON')
+        arcpy.management.SelectLayerByAttribute('taxa_vw')
+        arcpy.management.RemoveJoin('taxa_vw', 'observations')
+        arcpy.management.AddJoin('taxa_vw', 'id', prov_gdb + '/identifications', 'taxon_id', 'KEEP_COMMON')
+        arcpy.management.SelectLayerByAttribute('taxa_vw', 'ADD_TO_SELECTION')
+        arcpy.management.RemoveJoin('taxa_vw', 'identifications')
+        arcpy.conversion.TableToTable('taxa_vw', prov_gdb, 'taxa')
         arcpy.management.AddIndex(prov_gdb + '/taxa', ['id'], 'taxa_id_idx')
-        arcpy.conversion.TableToTable('taxa', prov_folder, 'taxa.csv')
+        if arcpy.Exists(prov_folder + '/iNat_taxa_' + iNatExchangeUtils.date_label + '.csv'):
+            arcpy.management.Delete(prov_folder + '/iNat_taxa_' + iNatExchangeUtils.date_label + '.csv')
+        arcpy.conversion.TableToTable('taxa_vw', prov_folder, 'iNat_taxa_' + iNatExchangeUtils.date_label + '.csv')
 
         # conservation_statuses
         iNatExchangeUtils.displayMessage(messages, 'Exporting conservation_statuses')
-        arcpy.management.MakeFeatureLayer('conservation_statuses', 'conservation_statuses_lyr')
-        arcpy.management.AddJoin('conservation_statuses_lyr', 'taxon_id', prov_gdb + '/taxa', 'id', 'KEEP_COMMON')
-        arcpy.management.SelectLayerByAttribute('conservation_statuses_lyr')
-        arcpy.management.RemoveJoin('conservation_statuses_lyr', 'taxa')
-        arcpy.conversion.TableToTable('conservation_statuses_lyr', prov_gdb, 'conservation_statuses')
+        arcpy.management.MakeTableView('conservation_statuses', 'conservation_statuses_vw')
+        arcpy.management.AddJoin('conservation_statuses_vw', 'taxon_id', prov_gdb + '/taxa', 'id', 'KEEP_COMMON')
+        arcpy.management.SelectLayerByAttribute('conservation_statuses_vw')
+        arcpy.management.RemoveJoin('conservation_statuses_vw', 'taxa')
+        arcpy.conversion.TableToTable('conservation_statuses_vw', prov_gdb, 'conservation_statuses')
         arcpy.management.AddIndex(prov_gdb + '/conservation_statuses', ['id'], 'cs_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/conservation_statuses', ['taxon_id'], 'cs_taxon_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/conservation_statuses', ['user_id'], 'cs_user_id_idx')
-        arcpy.conversion.TableToTable('conservation_statuses', prov_folder, 'conservation_statuses.csv')
+        if arcpy.Exists(prov_folder + '/iNat_conservation_statuses_' + iNatExchangeUtils.date_label + '.csv'):
+            arcpy.management.Delete(prov_folder + '/iNat_conservation_statuses_' + iNatExchangeUtils.date_label +
+                                    '.csv')
+        arcpy.conversion.TableToTable('conservation_statuses_vw', prov_folder, 'iNat_conservation_statuses_' +
+                                      iNatExchangeUtils.date_label + '.csv')
 
         # users (all records, no subsetting)
         iNatExchangeUtils.displayMessage(messages, 'Exporting users')
         arcpy.conversion.TableToTable('users', prov_gdb, 'users')
         arcpy.management.AddIndex(prov_gdb + '/users', ['id'], 'users_id_idx')
-        arcpy.conversion.TableToTable('users', prov_folder, 'users.csv')
+        if arcpy.Exists(prov_folder + '/iNat_users_' + iNatExchangeUtils.date_label + '.csv'):
+            arcpy.management.Delete(prov_folder + '/iNat_users_' +iNatExchangeUtils.date_label +
+                                    '.csv')
+        arcpy.conversion.TableToTable('users', prov_folder, 'iNat_users_' +iNatExchangeUtils.date_label + '.csv')
 
         # add relationships to output gdb
         iNatExchangeUtils.displayMessage(messages, 'Adding relationships to output gdb')
