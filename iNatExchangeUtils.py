@@ -10,6 +10,7 @@
 
 import arcpy
 
+
 prov_dict = {'NL': 'Newfoundland and Labrador',
              'NS': 'Nova Scotia',
              'NB': 'New Brunswick',
@@ -23,6 +24,7 @@ prov_dict = {'NL': 'Newfoundland and Labrador',
              'YT': 'Yukon',
              'NT': 'Northwest Territories',
              'NU': 'Nunavut'}
+# move to parms/tools
 project_path = 'C:/GIS/iNatExchange'
 input_folder = 'Input'
 input_label = 'inaturalist-ca-5-20210603-1622752843'
@@ -30,9 +32,10 @@ input_path = project_path + '/' + input_folder + '/' + input_label
 input_prefix = input_label + '-'
 output_folder = 'Output'
 output_path = project_path + '/' + output_folder
+date_label = '3June2021'
+# assume gdb is in same folder as tools? how to get it?
 jur_buffer = 'C:/GIS/iNatExchangeTools/iNatExchangeTools.gdb/JurisdictionBufferWGS84'
 marine_eez = 'C:/GIS/iNatExchangeTools/iNatExchangeTools.gdb/MarineBufferWGS84'
-date_label = '3June2021'
 
 
 def displayMessage(messages, msg):

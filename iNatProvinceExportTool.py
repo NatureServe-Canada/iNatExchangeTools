@@ -64,28 +64,28 @@ class iNatProvinceExportTool:
                                                    selection_type='ADD_TO_SELECTION')
         # split into multiple buckets based on parameters
         if param_include_ca_geo_private == 'true':
-            saveBucket('obs_lyr', 'ca_geo_private',
+            self.saveBucket('obs_lyr', 'ca_geo_private',
                        "geoprivacy = 'private' AND private_latitude IS NOT NULL", prov_gdb, prov_folder)
         if param_include_ca_geo_obscured == 'true':
-            saveBucket('obs_lyr', 'ca_geo_obscured',
+            self.saveBucket('obs_lyr', 'ca_geo_obscured',
                        "geoprivacy = 'obscured' AND private_latitude IS NOT NULL", prov_gdb, prov_folder)
         if param_include_ca_taxon_private == 'true':
-            saveBucket('obs_lyr', 'ca_taxon_private',
+            self.saveBucket('obs_lyr', 'ca_taxon_private',
                        "(geoprivacy = 'open' OR geoprivacy IS NULL) AND taxon_geoprivacy = 'private' " +
                        "AND private_latitude IS NOT NULL",
                        prov_gdb, prov_folder)
         if param_include_ca_taxon_obscured == 'true':
-            saveBucket('obs_lyr', 'ca_taxon_obscured',
+            self.saveBucket('obs_lyr', 'ca_taxon_obscured',
                        "(geoprivacy = 'open' OR geoprivacy IS NULL) AND taxon_geoprivacy = 'obscured' " +
                        "AND private_latitude IS NOT NULL",
                        prov_gdb, prov_folder)
         if param_include_org_private_obscured == 'true':
-            saveBucket('obs_lyr', 'org_private_obscured',
+            self.saveBucket('obs_lyr', 'org_private_obscured',
                        "geoprivacy IN ('obscured', 'private') OR taxon_geoprivacy IN ('obscured', 'private')" +
                        " AND private_latitude IS NULL",
                        prov_gdb, prov_folder)
         if param_include_unobscured == 'true':
-            saveBucket('obs_lyr', 'unobscured',
+            self.saveBucket('obs_lyr', 'unobscured',
                        "(geoprivacy = 'open' OR  geoprivacy IS NULL) AND (taxon_geoprivacy = 'open' OR " +
                        "taxon_geoprivacy IS NULL) AND private_latitude IS NULL",
                        prov_gdb, prov_folder)
@@ -284,7 +284,7 @@ class iNatProvinceExportTool:
                                                  'taxa_observations', 'SIMPLE', 'observations',
                                                  'taxa', 'NONE', 'ONE_TO_MANY', 'NONE', 'id', 'taxon_id')
 
-    def saveBucket(all_obs_lyr, bucket_name, bucket_condition, prov_gdb, prov_folder):
+    def saveBucket(this, all_obs_lyr, bucket_name, bucket_condition, prov_gdb, prov_folder):
         """subset the observations into a bucket and save"""
         arcpy.management.MakeFeatureLayer(all_obs_lyr, bucket_name + '_lyr', bucket_condition)
         # save to gdb
@@ -293,9 +293,9 @@ class iNatProvinceExportTool:
         arcpy.management.AddIndex(prov_gdb + '/observations_' + bucket_name, ['taxon_id'], 'observations_taxon_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/observations_' + bucket_name, ['user_id'], 'observations_user_id_idx')
         # save to csv
-        csv_name = '/iNat_observations_' + bucket_name + '_' + iNatExchangeUtils.date_label + '.csv'
-        if arcpy.Exists(prov_folder + csv_name):
-            arcpy.management.Delete(prov_folder + csv_name)
+        csv_name = 'iNat_observations_' + bucket_name + '_' + iNatExchangeUtils.date_label + '.csv'
+        if arcpy.Exists(prov_folder + '/' + csv_name):
+            arcpy.management.Delete(prov_folder + '/' + csv_name)
         arcpy.conversion.TableToTable(bucket_name + '_lyr', prov_folder, csv_name)
 
 
