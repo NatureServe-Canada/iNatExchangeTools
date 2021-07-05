@@ -29,6 +29,12 @@ class iNatProvinceExportTool:
         prov_name = iNatExchangeUtils.prov_dict[param_province]
         work_gdb = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb'
         arcpy.env.workspace = work_gdb
+        param_include_ca_geo_private = parameters[1].valueAsText
+        param_include_ca_geo_obscured = parameters[2].valueAsText
+        param_include_ca_taxon_private = parameters[3].valueAsText
+        param_include_ca_taxon_obscured = parameters[4].valueAsText
+        param_include_org_private_obscured = parameters[5].valueAsText
+        param_include_unobscured = parameters[6].valueAsText
         arcpy.gp.overwriteOutput = True
 
         # make folder and gdb for province
@@ -37,7 +43,8 @@ class iNatProvinceExportTool:
             arcpy.management.CreateFolder(iNatExchangeUtils.output_path, param_province)
         prov_gdb = prov_folder + '/iNat_' + param_province + '_' + iNatExchangeUtils.date_label + '.gdb'
         if not arcpy.Exists(prov_gdb):
-            arcpy.management.CreateFileGDB(prov_folder, '/iNat_' + param_province + '_' + iNatExchangeUtils.date_label + '.gdb')
+            arcpy.management.CreateFileGDB(prov_folder, '/iNat_' + param_province + '_' + iNatExchangeUtils.date_label +
+                                           '.gdb')
 
         # export observations - those named as being in province, or intersecting 32km terrestrial buffer or 200nm
         # Canadian EEZ marine buffer
@@ -55,15 +62,41 @@ class iNatProvinceExportTool:
                                                     "JurisdictionAbbreviation = '" + param_province + "'")
             arcpy.management.SelectLayerByLocation('obs_lyr', 'INTERSECT', 'MarineBuffer',
                                                    selection_type='ADD_TO_SELECTION')
-        # split into multiple buckets... most efficient way to do queries??? boolean parms???
-        arcpy.management.CopyFeatures('obs_lyr', prov_gdb + '/observations')
-        arcpy.management.AddIndex(prov_gdb + '/observations', ['id'], 'observations_id_idx')
-        arcpy.management.AddIndex(prov_gdb + '/observations', ['taxon_id'], 'observations_taxon_id_idx')
-        arcpy.management.AddIndex(prov_gdb + '/observations', ['user_id'], 'observations_user_id_idx')
-        if arcpy.Exists(prov_folder + '/iNat_observations_' + iNatExchangeUtils.date_label + '.csv'):
-            arcpy.management.Delete(prov_folder + '/iNat_observations_' + iNatExchangeUtils.date_label + '.csv')
-        arcpy.conversion.TableToTable('obs_lyr', prov_folder,
-                                      'iNat_observations_' + iNatExchangeUtils.date_label + '.csv')
+        # split into multiple buckets based on parameters
+        if param_include_ca_geo_private == 'true':
+            saveBucket('obs_lyr', 'ca_geo_private',
+                       "geoprivacy = 'private' AND private_latitude IS NOT NULL", prov_gdb, prov_folder)
+        if param_include_ca_geo_obscured == 'true':
+            saveBucket('obs_lyr', 'ca_geo_obscured',
+                       "geoprivacy = 'obscured' AND private_latitude IS NOT NULL", prov_gdb, prov_folder)
+        if param_include_ca_taxon_private == 'true':
+            saveBucket('obs_lyr', 'ca_taxon_private',
+                       "(geoprivacy = 'open' OR geoprivacy IS NULL) AND taxon_geoprivacy = 'private' " +
+                       "AND private_latitude IS NOT NULL",
+                       prov_gdb, prov_folder)
+        if param_include_ca_taxon_obscured == 'true':
+            saveBucket('obs_lyr', 'ca_taxon_obscured',
+                       "(geoprivacy = 'open' OR geoprivacy IS NULL) AND taxon_geoprivacy = 'obscured' " +
+                       "AND private_latitude IS NOT NULL",
+                       prov_gdb, prov_folder)
+        if param_include_org_private_obscured == 'true':
+            saveBucket('obs_lyr', 'org_private_obscured',
+                       "geoprivacy IN ('obscured', 'private') OR taxon_geoprivacy IN ('obscured', 'private')" +
+                       " AND private_latitude IS NULL",
+                       prov_gdb, prov_folder)
+        if param_include_unobscured == 'true':
+            saveBucket('obs_lyr', 'unobscured',
+                       "(geoprivacy = 'open' OR  geoprivacy IS NULL) AND (taxon_geoprivacy = 'open' OR " +
+                       "taxon_geoprivacy IS NULL) AND private_latitude IS NULL",
+                       prov_gdb, prov_folder)
+        #arcpy.management.CopyFeatures('obs_lyr', prov_gdb + '/observations')
+        #arcpy.management.AddIndex(prov_gdb + '/observations', ['id'], 'observations_id_idx')
+        #arcpy.management.AddIndex(prov_gdb + '/observations', ['taxon_id'], 'observations_taxon_id_idx')
+        #arcpy.management.AddIndex(prov_gdb + '/observations', ['user_id'], 'observations_user_id_idx')
+        #if arcpy.Exists(prov_folder + '/iNat_observations_' + iNatExchangeUtils.date_label + '.csv'):
+        #    arcpy.management.Delete(prov_folder + '/iNat_observations_' + iNatExchangeUtils.date_label + '.csv')
+        #arcpy.conversion.TableToTable('obs_lyr', prov_folder,
+        #                              'iNat_observations_' + iNatExchangeUtils.date_label + '.csv')
 
         # annotations - assume all are resource_type='Observation'
         iNatExchangeUtils.displayMessage(messages, 'Exporting annotations')
@@ -251,6 +284,20 @@ class iNatProvinceExportTool:
                                                  'taxa_observations', 'SIMPLE', 'observations',
                                                  'taxa', 'NONE', 'ONE_TO_MANY', 'NONE', 'id', 'taxon_id')
 
+    def saveBucket(all_obs_lyr, bucket_name, bucket_condition, prov_gdb, prov_folder):
+        """subset the observations into a bucket and save"""
+        arcpy.management.MakeFeatureLayer(all_obs_lyr, bucket_name + '_lyr', bucket_condition)
+        # save to gdb
+        arcpy.management.CopyFeatures(bucket_name + '_lyr', prov_gdb + '/observations_' + bucket_name)
+        arcpy.management.AddIndex(prov_gdb + '/observations_' + bucket_name, ['id'], 'observations_id_idx')
+        arcpy.management.AddIndex(prov_gdb + '/observations_' + bucket_name, ['taxon_id'], 'observations_taxon_id_idx')
+        arcpy.management.AddIndex(prov_gdb + '/observations_' + bucket_name, ['user_id'], 'observations_user_id_idx')
+        # save to csv
+        csv_name = '/iNat_observations_' + bucket_name + '_' + iNatExchangeUtils.date_label + '.csv'
+        if arcpy.Exists(prov_folder + csv_name):
+            arcpy.management.Delete(prov_folder + csv_name)
+        arcpy.conversion.TableToTable(bucket_name + '_lyr', prov_folder, csv_name)
+
 
 # controlling process
 if __name__ == '__main__':
@@ -258,7 +305,19 @@ if __name__ == '__main__':
     # hard code parameters for debugging
     param_province = arcpy.Parameter()
     param_province.value = 'NU'
-    parameters = [param_province]
+    param_include_ca_geo_private = arcpy.Parameter()
+    param_include_ca_geo_private.value = 'true'
+    param_include_ca_geo_obscured = arcpy.Parameter()
+    param_include_ca_geo_obscured.value = 'true'
+    param_include_ca_taxon_private = arcpy.Parameter()
+    param_include_ca_taxon_private.value = 'true'
+    param_include_ca_taxon_obscured = arcpy.Parameter()
+    param_include_ca_taxon_obscured.value = 'true'
+    param_include_org_private_obscured = arcpy.Parameter()
+    param_include_org_private_obscured.value = 'true'
+    param_include_unobscured = arcpy.Parameter()
+    param_include_unobscured.value = 'true'
+    parameters = [param_province, param_include_ca_geo_private, param_include_ca_geo_obscured,
+                  param_include_ca_taxon_private, param_include_ca_taxon_obscured, param_include_org_private_obscured,
+                  param_include_unobscured]
     inpe.runiNatProvinceExportTool(parameters, None)
-
-
