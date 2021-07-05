@@ -52,34 +52,46 @@ class iNatImportTool:
 #        arcpy.management.XYTableToPoint('obs_temp', 'observations', 'lon', 'lat')
 ##        arcpy.management.Delete('obs_temp')
 
-        # import other tables
-        iNatExchangeUtils.displayMessage(messages, 'Importing annotations')
-        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
-                                      'annotations.csv', arcpy.env.workspace, 'annotations')
-        iNatExchangeUtils.displayMessage(messages, 'Importing comments')
-        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
-                                      'comments.csv', arcpy.env.workspace, 'comments')
-        iNatExchangeUtils.displayMessage(messages, 'Importing conservation_statuses')
-        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
-                                      'conservation_statuses.csv', arcpy.env.workspace, 'conservation_statuses')
-        iNatExchangeUtils.displayMessage(messages, 'Importing identifications')
-        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
-                                      'identifications.csv', arcpy.env.workspace, 'identifications')
-        iNatExchangeUtils.displayMessage(messages, 'Importing observation_field_values')
-        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
-                                      'observation_field_values.csv', arcpy.env.workspace, 'observation_field_values')
-        iNatExchangeUtils.displayMessage(messages, 'Importing observation_fields')
-        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
-                                      'observation_fields.csv', arcpy.env.workspace, 'observation_fields')
-        iNatExchangeUtils.displayMessage(messages, 'Importing quality_metrics')
-        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
-                                      'quality_metrics.csv', arcpy.env.workspace, 'quality_metrics')
-        iNatExchangeUtils.displayMessage(messages, 'Importing taxa')
-        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
-                                      'taxa.csv', arcpy.env.workspace, 'taxa')
-        iNatExchangeUtils.displayMessage(messages, 'Importing users')
-        arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
-                                      'users.csv', arcpy.env.workspace, 'users')
+        ## import other tables
+        #iNatExchangeUtils.displayMessage(messages, 'Importing annotations')
+        #arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+        #                              'annotations.csv', arcpy.env.workspace, 'annotations')
+        #iNatExchangeUtils.displayMessage(messages, 'Importing comments')
+        #arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+        #                              'comments.csv', arcpy.env.workspace, 'comments')
+        #iNatExchangeUtils.displayMessage(messages, 'Importing conservation_statuses')
+        #arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+        #                              'conservation_statuses.csv', arcpy.env.workspace, 'conservation_statuses')
+        #iNatExchangeUtils.displayMessage(messages, 'Importing identifications')
+        #arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+        #                              'identifications.csv', arcpy.env.workspace, 'identifications')
+        #iNatExchangeUtils.displayMessage(messages, 'Importing observation_field_values')
+        #arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+        #                              'observation_field_values.csv', arcpy.env.workspace, 'observation_field_values')
+        #iNatExchangeUtils.displayMessage(messages, 'Importing observation_fields')
+        #arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+        #                              'observation_fields.csv', arcpy.env.workspace, 'observation_fields')
+        #iNatExchangeUtils.displayMessage(messages, 'Importing quality_metrics')
+        #arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+        #                              'quality_metrics.csv', arcpy.env.workspace, 'quality_metrics')
+        #iNatExchangeUtils.displayMessage(messages, 'Importing taxa')
+        #arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+        #                              'taxa.csv', arcpy.env.workspace, 'taxa')
+        #iNatExchangeUtils.displayMessage(messages, 'Importing users')
+        #arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
+        #                              'users.csv', arcpy.env.workspace, 'users')
+
+        # add indexes
+        iNatExchangeUtils.displayMessage(messages, 'Indexing query and join fields')
+        arcpy.management.AddIndex('observations', ['place_admin1_name'], 'place_admin1_name_idx')
+        arcpy.management.AddIndex('annotations', ['resource_id'], 'resource_id_idx')
+        arcpy.management.AddIndex('comments', ['parent_id'], 'parent_id_idx')
+        arcpy.management.AddIndex('identifications', ['observation_id'], 'observation_id_idx')
+        arcpy.management.AddIndex('observation_field_values', ['observation_id'], 'observation_id_idx')
+        arcpy.management.AddIndex('quality_metrics', ['observation_id'], 'observation_id_idx')
+        arcpy.management.AddIndex('taxa', ['id'], 'taxon_id_idx')
+        arcpy.management.AddIndex('conservation_statuses', ['taxon_id'], 'taxon_id_idx')
+
 
 # controlling process
 if __name__ == '__main__':

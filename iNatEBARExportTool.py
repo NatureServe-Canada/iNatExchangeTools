@@ -41,12 +41,16 @@ class iNatEBARExportTool:
         # select observations within EBAR buffer
         arcpy.management.MakeFeatureLayer(observations, 'observations')
         arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', buffer)
-        # select research grade, unobscured observations
-        arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION',
-                                                "quality_grade = 'research' AND private_latitude IS NULL")
+        ## select research grade, unobscured observations
+        #arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION',
+        #                                        "quality_grade = 'research' AND private_latitude IS NULL")
+        # select unobscured observations
+        arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NULL')
 
         # export
         arcpy.conversion.TableToTable('observations', 'C:/GIS/iNatExchange', 'unobscured_for_ebar_import.csv')
+
+        # repeat process for obscured
 
 
 # controlling process
