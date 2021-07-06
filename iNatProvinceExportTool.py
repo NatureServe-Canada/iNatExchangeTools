@@ -41,7 +41,7 @@ class iNatProvinceExportTool:
             param_include_ca_taxon_obscured == 'false' and
             param_include_org_private_obscured == 'false' and
             param_include_unobscured == 'false'):
-            iNatExchangeUtils.displayMessage(messages, 'ERROR: you must include at least one set of records.')
+            iNatExchangeUtils.displayMessage(messages, 'ERROR: you must include at least one set of records')
 
         arcpy.gp.overwriteOutput = True
 
@@ -111,7 +111,7 @@ class iNatProvinceExportTool:
         # annotations - assume all are resource_type='Observation'
         iNatExchangeUtils.displayMessage(messages, 'Exporting annotations')
         arcpy.management.MakeTableView('annotations', 'annotations_vw')
-        arcpy.management.AddJoin('annotations_vw', 'resource_id', prov_folder + '/observations_all', 'id',
+        arcpy.management.AddJoin('annotations_vw', 'resource_id', prov_gdb + '/observations_all', 'id',
                                  'KEEP_COMMON')
         arcpy.management.SelectLayerByAttribute('annotations_vw')
         arcpy.management.RemoveJoin('annotations_vw', 'observations_all')
@@ -126,7 +126,7 @@ class iNatProvinceExportTool:
         # comments - assume all are parent_type='Observation'
         iNatExchangeUtils.displayMessage(messages, 'Exporting comments')
         arcpy.management.MakeTableView('comments', 'comments_vw')
-        arcpy.management.AddJoin('comments_vw', 'parent_id', prov_folder + '/observations_all', 'id', 'KEEP_COMMON')
+        arcpy.management.AddJoin('comments_vw', 'parent_id', prov_gdb + '/observations_all', 'id', 'KEEP_COMMON')
         arcpy.management.SelectLayerByAttribute('comments_vw')
         arcpy.management.RemoveJoin('comments_vw', 'observations_all')
         arcpy.conversion.TableToTable('comments_vw', prov_gdb, 'comments')
@@ -140,7 +140,7 @@ class iNatProvinceExportTool:
         # identifications
         iNatExchangeUtils.displayMessage(messages, 'Exporting identifications')
         arcpy.management.MakeTableView('identifications', 'identifications_vw')
-        arcpy.management.AddJoin('identifications_vw', 'observation_id', prov_folder + '/observations_all', 'id',
+        arcpy.management.AddJoin('identifications_vw', 'observation_id', prov_gdb + '/observations_all', 'id',
                                  'KEEP_COMMON')
         arcpy.management.SelectLayerByAttribute('identifications_vw')
         arcpy.management.RemoveJoin('identifications_vw', 'observations_all')
@@ -157,7 +157,7 @@ class iNatProvinceExportTool:
         # observation_field_values
         iNatExchangeUtils.displayMessage(messages, 'Exporting observation_field_values')
         arcpy.management.MakeTableView('observation_field_values', 'observation_field_values_vw')
-        arcpy.management.AddJoin('observation_field_values_vw', 'observation_id', prov_folder + '/observations_all',
+        arcpy.management.AddJoin('observation_field_values_vw', 'observation_id', prov_gdb + '/observations_all',
                                  'id', 'KEEP_COMMON')
         arcpy.management.SelectLayerByAttribute('observation_field_values_vw')
         arcpy.management.RemoveJoin('observation_field_values_vw', 'observations_all')
@@ -186,7 +186,7 @@ class iNatProvinceExportTool:
         # quality_metrics
         iNatExchangeUtils.displayMessage(messages, 'Exporting quality_metrics')
         arcpy.management.MakeTableView('quality_metrics', 'quality_metrics_vw')
-        arcpy.management.AddJoin('quality_metrics_vw', 'observation_id', prov_folder + '/observations_all', 'id',
+        arcpy.management.AddJoin('quality_metrics_vw', 'observation_id', prov_gdb + '/observations_all', 'id',
                                  'KEEP_COMMON')
         arcpy.management.SelectLayerByAttribute('quality_metrics_vw')
         arcpy.management.RemoveJoin('quality_metrics_vw', 'observations_all')
@@ -202,7 +202,7 @@ class iNatProvinceExportTool:
         # taxa
         iNatExchangeUtils.displayMessage(messages, 'Exporting taxa')
         arcpy.management.MakeTableView('taxa', 'taxa_vw')
-        arcpy.management.AddJoin('taxa_vw', 'id', prov_folder + '/observations_all', 'taxon_id', 'KEEP_COMMON')
+        arcpy.management.AddJoin('taxa_vw', 'id', prov_gdb + '/observations_all', 'taxon_id', 'KEEP_COMMON')
         arcpy.management.SelectLayerByAttribute('taxa_vw')
         arcpy.management.RemoveJoin('taxa_vw', 'observations_all')
         arcpy.management.AddJoin('taxa_vw', 'id', prov_gdb + '/identifications', 'taxon_id', 'KEEP_COMMON')
@@ -269,9 +269,6 @@ class iNatProvinceExportTool:
         arcpy.management.CreateRelationshipClass(prov_gdb + '/users', prov_gdb + '/quality_metrics',
                                                  'users_quality_metrics', 'SIMPLE', 'quality_metrics', 'users', 'NONE',
                                                  'ONE_TO_MANY', 'NONE', 'id', 'user_id')
-        arcpy.management.CreateRelationshipClass(prov_gdb + '/observations', prov_gdb + '/quality_metrics',
-                                                 'observations_quality_metrics', 'SIMPLE', 'quality_metrics',
-                                                 'observations', 'NONE', 'ONE_TO_MANY', 'NONE', 'id', 'observation_id')
         self.createBucketRelationships('all', prov_gdb)
         if param_include_ca_geo_private == 'true':
             self.createBucketRelationships('ca_geo_private', prov_gdb)
@@ -328,6 +325,10 @@ class iNatProvinceExportTool:
         arcpy.management.CreateRelationshipClass(prov_gdb + '/taxa', prov_gdb + '/observations_' + bucket_name,
                                                  'taxa_observations_' + bucket_name, 'SIMPLE', 'observations_' +
                                                  bucket_name, 'taxa', 'NONE', 'ONE_TO_MANY', 'NONE', 'id', 'taxon_id')
+        arcpy.management.CreateRelationshipClass(prov_gdb + '/observations_' + bucket_name, prov_gdb +
+                                                 '/quality_metrics', 'observations_' + bucket_name +
+                                                 '_quality_metrics', 'SIMPLE', 'quality_metrics', 'observations_' +
+                                                 bucket_name, 'NONE', 'ONE_TO_MANY', 'NONE', 'id', 'observation_id')
 
 
 # controlling process
