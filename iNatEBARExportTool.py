@@ -24,9 +24,10 @@ class iNatEBARExportTool:
 
         # make variables for parms
         iNatExchangeUtils.displayMessage(messages, 'Processing parameters')
-        #param_geodatabase = parameters[0].valueAsText
-        observations = 'C:/GIS/iNatExchange/Output/inaturalist-ca-5-20210603-1622752843.gdb/observations'
-        buffer = 'C:/GIS/EBAR/EBAR.gdb/JurisdictionBufferFull'
+        iNatExchangeUtils.project_path = parameters[0].valueAsText
+        iNatExchangeUtils.output_path = iNatExchangeUtils.project_path + '/' + iNatExchangeUtils.output_folder
+        iNatExchangeUtils.input_label = parameters[1].valueAsText
+        observations = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb/observations'
 
         # convert date to text if necessary
         convert_date = False
@@ -36,30 +37,35 @@ class iNatEBARExportTool:
             # add field
         elif field_type != 'Date':
             convert_date = True
-        # field name decisions...
 
-        # select observations within EBAR buffer
+        # export unobscured observations
+        iNatExchangeUtils.displayMessage(messages, 'Exporting observations')
         arcpy.management.MakeFeatureLayer(observations, 'observations')
-        arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', buffer)
-        ## select research grade, unobscured observations
-        #arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION',
-        #                                        "quality_grade = 'research' AND private_latitude IS NULL")
-        # select unobscured observations
+        arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', iNatExchangeUtils.jur_buffer)
         arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NULL')
+        if arcpy.Exists(iNatExchangeUtils.project_path + '/unobscured_for_ebar_import.csv'):
+            arcpy.Delete_management(iNatExchangeUtils.project_path + '/unobscured_for_ebar_import.csv')
+        arcpy.conversion.TableToTable('observations', iNatExchangeUtils.project_path, 'unobscured_for_ebar_import.csv')
+        iNatExchangeUtils.displayMessage(messages, 'Created ' + iNatExchangeUtils.project_path +
+                                         '/unobscured_for_ebar_import.csv')
 
-        # export
-        arcpy.conversion.TableToTable('observations', 'C:/GIS/iNatExchange', 'unobscured_for_ebar_import.csv')
-
-        # repeat process for obscured
+        # export obscured observations
+        arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', iNatExchangeUtils.jur_buffer)
+        arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NOT NULL')
+        if arcpy.Exists(iNatExchangeUtils.project_path + '/obscured_for_ebar_import.csv'):
+            arcpy.Delete_management(iNatExchangeUtils.project_path + '/obscured_for_ebar_import.csv')
+        arcpy.conversion.TableToTable('observations', iNatExchangeUtils.project_path, 'obscured_for_ebar_import.csv')
+        iNatExchangeUtils.displayMessage(messages, 'Created ' + iNatExchangeUtils.project_path +
+                                         '/obscured_for_ebar_import.csv')
 
 
 # controlling process
 if __name__ == '__main__':
     inee = iNatEBARExportTool()
     # hard code parameters for debugging
-    #param_geodatabase = arcpy.Parameter()
-    #param_geodatabase.value = 'C:/GIS/EBAR/EBAR-KBA-Dev.gdb'
-    #parameters = [param_geodatabase]
-    parameters = []
+    param_project_path = arcpy.Parameter()
+    param_project_path.value = 'C:/GIS/iNatExchange'
+    param_input_label = arcpy.Parameter()
+    param_input_label.value = 'inaturalist-ca-5-20210603-1622752843'
+    parameters = [param_project_path, param_input_label]
     inee.runiNatEBARExportTool(parameters, None)
-

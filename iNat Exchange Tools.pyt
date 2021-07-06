@@ -55,16 +55,16 @@ class iNatImport(object):
             direction='Input')
         param_input_label.value = 'inaturalist-ca-5-20210603-1622752843'
 
-        # Date Label
-        param_date_label = arcpy.Parameter(
-            displayName='Input Label',
-            name='input_label',
-            datatype='GPString',
-            parameterType='Required',
-            direction='Input')
-        param_date_label.value = '3June2021'
+        ## Date Label
+        #param_date_label = arcpy.Parameter(
+        #    displayName='Input Label',
+        #    name='input_label',
+        #    datatype='GPString',
+        #    parameterType='Required',
+        #    direction='Input')
+        #param_date_label.value = '3June2021'
 
-        params = [param_project_path, param_input_label, param_date_label]
+        params = [param_project_path, param_input_label]
         return params
 
     def isLicensed(self):
@@ -85,6 +85,57 @@ class iNatImport(object):
         """The source code of the tool."""
         ini = iNatImportTool()
         ini.runiNatImportTool(parameters, messages)
+        return
+
+
+class iNatEBARExport(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = 'iNat EBAR Export'
+        self.description = 'Export iNaturalist.ca records into CSVs for EBAR import'
+        self.canRunInBackground = True
+
+    def getParameterInfo(self):
+        """Define parameter definitions"""
+        # Project Path
+        param_project_path = arcpy.Parameter(
+            displayName='Project Path',
+            name='project_path',
+            datatype='DEFolder',
+            parameterType='Required',
+            direction='Input')
+        param_project_path.value = 'C:/GIS/iNatExchange'
+
+        # Input Label
+        param_input_label = arcpy.Parameter(
+            displayName='Input Label',
+            name='input_label',
+            datatype='GPString',
+            parameterType='Required',
+            direction='Input')
+        param_input_label.value = 'inaturalist-ca-5-20210603-1622752843'
+
+        params = [param_project_path, param_input_label]
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal validation is performed.  This method is 
+        called whenever a parameter has been changed."""
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool parameter.  This method is called 
+        after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        inee = iNatEBARExportTool()
+        inee.runiNatEBARExportTool(parameters, messages)
         return
 
 

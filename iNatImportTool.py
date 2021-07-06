@@ -35,7 +35,6 @@ class iNatImportTool:
         if not arcpy.Exists(iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb'):
             arcpy.management.CreateFileGDB(iNatExchangeUtils.output_path, iNatExchangeUtils.input_label + '.gdb')
         arcpy.env.workspace = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb'
-        iNatExchangeUtils.date_label = parameters[2].valueAsText
 
         # import observations, giving preference to private coordinates where available
         iNatExchangeUtils.displayMessage(messages, 'Importing observations')
@@ -111,7 +110,5 @@ if __name__ == '__main__':
     param_project_path.value = 'C:/GIS/iNatExchange'
     param_input_label = arcpy.Parameter()
     param_input_label.value = 'inaturalist-ca-5-20210603-1622752843'
-    param_date_label = arcpy.Parameter()
-    param_date_label.value = '3June2021'
-    parameters = [param_project_path, param_input_label, param_date_label]
+    parameters = [param_project_path, param_input_label]
     ini.runiNatImportTool(parameters, None)
