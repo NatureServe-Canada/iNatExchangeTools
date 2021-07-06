@@ -24,16 +24,20 @@ class iNatProvinceExportTool:
 
         # make variables for parms
         iNatExchangeUtils.displayMessage(messages, 'Processing parameters')
-        param_province = parameters[0].valueAsText
+        iNatExchangeUtils.project_path = parameters[0].valueAsText
+        iNatExchangeUtils.output_path = iNatExchangeUtils.project_path + '/' + iNatExchangeUtils.output_folder
+        iNatExchangeUtils.input_label = parameters[1].valueAsText
+        iNatExchangeUtils.date_label = parameters[2].valueAsText
+        param_province = parameters[3].valueAsText
         prov_name = iNatExchangeUtils.prov_dict[param_province]
         work_gdb = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb'
         arcpy.env.workspace = work_gdb
-        param_include_ca_geo_private = parameters[1].valueAsText
-        param_include_ca_geo_obscured = parameters[2].valueAsText
-        param_include_ca_taxon_private = parameters[3].valueAsText
-        param_include_ca_taxon_obscured = parameters[4].valueAsText
-        param_include_org_private_obscured = parameters[5].valueAsText
-        param_include_unobscured = parameters[6].valueAsText
+        param_include_ca_geo_private = parameters[4].valueAsText
+        param_include_ca_geo_obscured = parameters[5].valueAsText
+        param_include_ca_taxon_private = parameters[6].valueAsText
+        param_include_ca_taxon_obscured = parameters[7].valueAsText
+        param_include_org_private_obscured = parameters[8].valueAsText
+        param_include_unobscured = parameters[9].valueAsText
         if (param_include_ca_geo_private == 'false' and
             param_include_ca_geo_obscured == 'false' and
             param_include_ca_taxon_private == 'false' and
@@ -334,6 +338,12 @@ class iNatProvinceExportTool:
 if __name__ == '__main__':
     inpe = iNatProvinceExportTool()
     # hard code parameters for debugging
+    param_project_path = arcpy.Parameter()
+    param_project_path.value = 'C:/GIS/iNatExchange'
+    param_input_label = arcpy.Parameter()
+    param_input_label.value = 'inaturalist-ca-5-20210603-1622752843'
+    param_date_label = arcpy.Parameter()
+    param_date_label.value = '3June2021'
     param_province = arcpy.Parameter()
     param_province.value = 'NU'
     param_include_ca_geo_private = arcpy.Parameter()
@@ -348,7 +358,7 @@ if __name__ == '__main__':
     param_include_org_private_obscured.value = 'true'
     param_include_unobscured = arcpy.Parameter()
     param_include_unobscured.value = 'true'
-    parameters = [param_province, param_include_ca_geo_private, param_include_ca_geo_obscured,
-                  param_include_ca_taxon_private, param_include_ca_taxon_obscured, param_include_org_private_obscured,
-                  param_include_unobscured]
+    parameters = [param_project_path, param_input_label, param_date_label, param_province,
+                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
+                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
     inpe.runiNatProvinceExportTool(parameters, None)

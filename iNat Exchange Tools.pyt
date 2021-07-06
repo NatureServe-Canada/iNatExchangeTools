@@ -139,3 +139,128 @@ class iNatEBARExport(object):
         return
 
 
+class iNatProvinceExport(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = 'iNat Province Export'
+        self.description = 'Export iNaturalist.ca records into GDB and CSVs for transfer to Provinces'
+        self.canRunInBackground = True
+
+    def getParameterInfo(self):
+        """Define parameter definitions"""
+        # Project Path
+        param_project_path = arcpy.Parameter(
+            displayName='Project Path',
+            name='project_path',
+            datatype='DEFolder',
+            parameterType='Required',
+            direction='Input')
+        param_project_path.value = 'C:/GIS/iNatExchange'
+
+        # Input Label
+        param_input_label = arcpy.Parameter(
+            displayName='Input Label',
+            name='input_label',
+            datatype='GPString',
+            parameterType='Required',
+            direction='Input')
+        param_input_label.value = 'inaturalist-ca-5-20210603-1622752843'
+
+        # Date Label
+        param_date_label = arcpy.Parameter(
+            displayName='Date Label',
+            name='date_label',
+            datatype='GPString',
+            parameterType='Required',
+            direction='Input')
+        param_date_label.value = '3June2021'
+
+        # Province
+        param_province = arcpy.Parameter(
+            displayName='Input Label',
+            name='input_label',
+            datatype='GPString',
+            parameterType='Required',
+            direction='Input')
+        param_province.filter.type = 'ValueList'
+        param_province.filter.list = iNatExchangeUtils.prov_dict.keys()
+        param_province.value = 'NU'
+
+        # Include iNaturalist.ca Geoprivacy=Private
+        param_include_ca_geo_private = arcpy.Parameter(
+            displayName='Include iNaturalist.ca Geoprivacy=Private',
+            name='include_ca_geo_private',
+            datatype='GPBoolean',
+            parameterType='Required',
+            direction='Input')
+        param_include_ca_geo_private.value = 'true'
+
+        # Include iNaturalist.ca Geoprivacy=Obscured
+        param_include_ca_geo_obscured = arcpy.Parameter(
+            displayName='Include iNaturalist.ca Geoprivacy=Obscured',
+            name='include_ca_geo_obscured',
+            datatype='GPBoolean',
+            parameterType='Required',
+            direction='Input')
+        param_include_ca_geo_obscured.value = 'true'
+
+        # Include iNaturalist.ca Taxon Geoprivacy=Private
+        param_include_ca_taxon_private = arcpy.Parameter(
+            displayName='Include iNaturalist.ca Taxon Geoprivacy=Private',
+            name='include_ca_taxon_private',
+            datatype='GPBoolean',
+            parameterType='Required',
+            direction='Input')
+        param_include_ca_taxon_private.value = 'true'
+
+        # Include iNaturalist.ca Taxon Geoprivacy=Obscured
+        param_include_ca_taxon_obscured = arcpy.Parameter(
+            displayName='Include iNaturalist.ca Taxon Geoprivacy=Obscured',
+            name='include_ca_taxon_obscured',
+            datatype='GPBoolean',
+            parameterType='Required',
+            direction='Input')
+        param_include_ca_taxon_obscured.value = 'true'
+
+        # Include iNaturalist.org Private and Obscured
+        param_include_org_private_obscured = arcpy.Parameter(
+            displayName='Include iNaturalist.org Private and Obscured',
+            name='include_org_private_obscured',
+            datatype='GPBoolean',
+            parameterType='Required',
+            direction='Input')
+        param_include_org_private_obscured.value = 'true'
+
+        # Include Unobscured
+        param_include_unobscured = arcpy.Parameter(
+            displayName='Include Unobscured',
+            name='include_unobscured',
+            datatype='GPBoolean',
+            parameterType='Required',
+            direction='Input')
+        param_include_unobscured.value = 'true'
+
+        params = [param_project_path, param_input_label, param_date_label, param_province,
+                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
+                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal validation is performed.  This method is 
+        called whenever a parameter has been changed."""
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool parameter.  This method is called 
+        after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        ini = iNatImportTool()
+        ini.runiNatImportTool(parameters, messages)
+        return
