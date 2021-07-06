@@ -83,6 +83,7 @@ def get_coord(coord, private_coord):
 
         # add indexes
         iNatExchangeUtils.displayMessage(messages, 'Indexing query and join fields')
+        arcpy.management.AddIndex('observations', ['id'], 'id_idx')
         arcpy.management.AddIndex('observations', ['place_admin1_name'], 'place_admin1_name_idx')
         arcpy.management.AddIndex('observations', ['geoprivacy'], 'geoprivacy_idx')
         arcpy.management.AddIndex('observations', ['taxon_geoprivacy'], 'taxon_geoprivacy_idx')
@@ -92,7 +93,7 @@ def get_coord(coord, private_coord):
         arcpy.management.AddIndex('identifications', ['observation_id'], 'observation_id_idx')
         arcpy.management.AddIndex('observation_field_values', ['observation_id'], 'observation_id_idx')
         arcpy.management.AddIndex('quality_metrics', ['observation_id'], 'observation_id_idx')
-        arcpy.management.AddIndex('taxa', ['id'], 'taxon_id_idx')
+        arcpy.management.AddIndex('taxa', ['id'], 'id_idx')
         arcpy.management.AddIndex('conservation_statuses', ['taxon_id'], 'taxon_id_idx')
 
 
