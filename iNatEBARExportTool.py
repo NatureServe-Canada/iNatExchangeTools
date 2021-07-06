@@ -24,6 +24,7 @@ class iNatEBARExportTool:
 
         # make variables for parms
         iNatExchangeUtils.displayMessage(messages, 'Processing parameters')
+        toolbox_path = os.path.basename()
         iNatExchangeUtils.project_path = parameters[0].valueAsText
         iNatExchangeUtils.output_path = iNatExchangeUtils.project_path + '/' + iNatExchangeUtils.output_folder
         iNatExchangeUtils.input_label = parameters[1].valueAsText
@@ -41,7 +42,9 @@ class iNatEBARExportTool:
         # export unobscured observations
         iNatExchangeUtils.displayMessage(messages, 'Exporting observations')
         arcpy.management.MakeFeatureLayer(observations, 'observations')
-        arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', iNatExchangeUtils.jur_buffer)
+        #arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', iNatExchangeUtils.jur_buffer)
+        arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', toolbox_folder +
+                                               '/iNatExchangeTools.gdb/JurisdictionBufferWGS84')
         arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NULL')
         if arcpy.Exists(iNatExchangeUtils.project_path + '/unobscured_for_ebar_import.csv'):
             arcpy.Delete_management(iNatExchangeUtils.project_path + '/unobscured_for_ebar_import.csv')
@@ -50,7 +53,9 @@ class iNatEBARExportTool:
                                          '/unobscured_for_ebar_import.csv')
 
         # export obscured observations
-        arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', iNatExchangeUtils.jur_buffer)
+        #arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', iNatExchangeUtils.jur_buffer)
+        arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', toolbox_folder +
+                                               '/iNatExchangeTools.gdb/JurisdictionBufferWGS84')
         arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NOT NULL')
         if arcpy.Exists(iNatExchangeUtils.project_path + '/obscured_for_ebar_import.csv'):
             arcpy.Delete_management(iNatExchangeUtils.project_path + '/obscured_for_ebar_import.csv')

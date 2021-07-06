@@ -10,6 +10,7 @@
 # import Python packages
 import arcpy
 import iNatExchangeUtils
+import os
 
 
 class iNatProvinceExportTool:
@@ -24,6 +25,7 @@ class iNatProvinceExportTool:
 
         # make variables for parms
         iNatExchangeUtils.displayMessage(messages, 'Processing parameters')
+        toolbox_path = os.path.basename()
         iNatExchangeUtils.project_path = parameters[0].valueAsText
         iNatExchangeUtils.output_path = iNatExchangeUtils.project_path + '/' + iNatExchangeUtils.output_folder
         iNatExchangeUtils.input_label = parameters[1].valueAsText
@@ -54,21 +56,25 @@ class iNatProvinceExportTool:
             arcpy.management.CreateFolder(iNatExchangeUtils.output_path, param_province)
         prov_gdb = prov_folder + '/iNat_' + param_province + '_' + iNatExchangeUtils.date_label + '.gdb'
         if not arcpy.Exists(prov_gdb):
-            arcpy.management.CreateFileGDB(prov_folder, '/iNat_' + param_province + '_' + iNatExchangeUtils.date_label +
-                                           '.gdb')
+            arcpy.management.CreateFileGDB(prov_folder, '/iNat_' + param_province + '_' +
+                                           iNatExchangeUtils.date_label + '.gdb')
 
         # export observations - those named as being in province, or intersecting 32km terrestrial buffer or 200nm
         # Canadian EEZ marine buffer
         iNatExchangeUtils.displayMessage(messages, 'Exporting observations')
         arcpy.management.MakeFeatureLayer('observations', 'obs_lyr')
         arcpy.management.SelectLayerByAttribute('obs_lyr', 'NEW_SELECTION', "place_admin1_name = '" + prov_name + "'")
-        arcpy.management.MakeFeatureLayer(iNatExchangeUtils.jur_buffer, 'JurisdictionBuffer')
+        #arcpy.management.MakeFeatureLayer(iNatExchangeUtils.jur_buffer, 'JurisdictionBuffer')
+        arcpy.management.MakeFeatureLayer(toolbox_folder + '/iNatExchangeTools.gdb/JurisdictionBufferWGS84',
+                                          'JurisdictionBuffer')
         arcpy.management.SelectLayerByAttribute('JurisdictionBuffer', 'NEW_SELECTION',
                                                 "JurisdictionAbbreviation = '" + param_province + "'")
         arcpy.management.SelectLayerByLocation('obs_lyr', 'INTERSECT', 'JurisdictionBuffer',
                                                selection_type='ADD_TO_SELECTION')
         if param_province not in('SK', 'AB'):
-            arcpy.management.MakeFeatureLayer(iNatExchangeUtils.marine_eez, 'MarineBuffer')
+            #arcpy.management.MakeFeatureLayer(iNatExchangeUtils.marine_eez, 'MarineBuffer')
+            arcpy.management.MakeFeatureLayer(toolbox_folder + '/iNatExchangeTools.gdb/MarineBufferWGS84',
+                                              'MarineBuffer')
             arcpy.management.SelectLayerByAttribute('MarineBuffer', 'NEW_SELECTION',
                                                     "JurisdictionAbbreviation = '" + param_province + "'")
             arcpy.management.SelectLayerByLocation('obs_lyr', 'INTERSECT', 'MarineBuffer',

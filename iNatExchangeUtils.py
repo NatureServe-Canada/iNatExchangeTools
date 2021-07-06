@@ -33,9 +33,9 @@ input_prefix = input_label + '-'
 output_folder = 'Output'
 output_path = project_path + '/' + output_folder
 date_label = '3June2021'
-# assume gdb is in same folder as tools? how to get it?
-jur_buffer = 'C:/GIS/iNatExchangeTools/iNatExchangeTools.gdb/JurisdictionBufferWGS84'
-marine_eez = 'C:/GIS/iNatExchangeTools/iNatExchangeTools.gdb/MarineBufferWGS84'
+## assume gdb is in same folder as tools? how to get it?
+#jur_buffer = 'C:/GIS/iNatExchangeTools/iNatExchangeTools.gdb/JurisdictionBufferWGS84'
+#marine_eez = 'C:/GIS/iNatExchangeTools/iNatExchangeTools.gdb/MarineBufferWGS84'
 
 
 def displayMessage(messages, msg):
