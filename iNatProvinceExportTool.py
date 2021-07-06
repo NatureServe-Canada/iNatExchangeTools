@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 # Project: iNatExchangeTools
-# Project: iNatExchangeTools
 # Credits: Randal Greene, Allison Siemens-Worsley
 # © NatureServe Canada 2021 under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
 

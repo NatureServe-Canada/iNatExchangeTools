@@ -24,7 +24,7 @@ prov_dict = {'NL': 'Newfoundland and Labrador',
              'YT': 'Yukon',
              'NT': 'Northwest Territories',
              'NU': 'Nunavut'}
-# move to parms/tools
+# overridden in tools via parameters
 project_path = 'C:/GIS/iNatExchange'
 input_folder = 'Input'
 input_label = 'inaturalist-ca-5-20210603-1622752843'

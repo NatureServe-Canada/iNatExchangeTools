@@ -24,12 +24,18 @@ class iNatImportTool:
 
         # make variables for parms
         iNatExchangeUtils.displayMessage(messages, 'Processing parameters')
-        #param_geodatabase = parameters[0].valueAsText
+        iNatExchangeUtils.project_path = parameters[0].valueAsText
+        iNatExchangeUtils.output_path = iNatExchangeUtils.project_path + '/' + iNatExchangeUtils.output_folder
         if not arcpy.Exists(iNatExchangeUtils.output_path):
             arcpy.management.CreateFolder(iNatExchangeUtils.project_path, iNatExchangeUtils.output_folder)
+        iNatExchangeUtils.input_label = parameters[1].valueAsText
+        iNatExchangeUtils.input_path = iNatExchangeUtils.project_path + '/' + iNatExchangeUtils.input_folder + '/' + \
+            iNatExchangeUtils.input_label
+        iNatExchangeUtils.input_prefix = iNatExchangeUtils.input_label + '-'
         if not arcpy.Exists(iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb'):
             arcpy.management.CreateFileGDB(iNatExchangeUtils.output_path, iNatExchangeUtils.input_label + '.gdb')
         arcpy.env.workspace = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb'
+        iNatExchangeUtils.date_label = parameters[2].valueAsText
 
         # import observations, giving preference to private coordinates where available
         iNatExchangeUtils.displayMessage(messages, 'Importing observations')
@@ -101,8 +107,11 @@ def get_coord(coord, private_coord):
 if __name__ == '__main__':
     ini = iNatImportTool()
     # hard code parameters for debugging
-    #param_geodatabase = arcpy.Parameter()
-    #param_geodatabase.value = 'C:/GIS/EBAR/EBAR-KBA-Dev.gdb'
-    #parameters = [param_geodatabase]
-    parameters = []
+    param_project_path = arcpy.Parameter()
+    param_project_path.value = 'C:/GIS/iNatExchange'
+    param_input_label = arcpy.Parameter()
+    param_input_label.value = 'inaturalist-ca-5-20210603-1622752843'
+    param_date_label = arcpy.Parameter()
+    param_date_label.value = '3June2021'
+    parameters = [param_project_path, param_input_label, param_date_label]
     ini.runiNatImportTool(parameters, None)
