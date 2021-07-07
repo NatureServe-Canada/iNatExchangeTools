@@ -348,4 +348,6 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-/iNatExchangeTools.gdb
+/iNatExchangeTools.gdb/JurisdictionBufferWGS84.THINK.780.24976.sr.lock
+/iNatExchangeTools.gdb/MarineBufferWGS84.THINK.780.24976.sr.lock
+/iNatExchangeTools.gdb/_gdb.THINK.780.24976.sr.lock

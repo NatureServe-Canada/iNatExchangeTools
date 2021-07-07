@@ -14,7 +14,7 @@
 import arcpy
 import iNatImportTool
 import iNatEBARExportTool
-import iNatProvinceExportTool
+import iNatJurisdictionExportTool
 import iNatExchangeUtils
 
 
@@ -25,7 +25,7 @@ class Toolbox(object):
         self.alias = ''
 
         # List of tool classes associated with this toolbox
-        self.tools = [iNatImport, iNatEBARExport, iNatProvinceExport]
+        self.tools = [iNatImport, iNatEBARExport, iNatJurisdictionExport]
 
 
 class iNatImport(object):
@@ -139,7 +139,7 @@ class iNatEBARExport(object):
         return
 
 
-class iNatProvinceExport(object):
+class iNatJurisdictionExport(object):
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
         self.label = 'iNat Province Export'
@@ -180,11 +180,28 @@ class iNatProvinceExport(object):
             displayName='Province',
             name='province',
             datatype='GPString',
-            parameterType='Required',
+            parameterType='Optional',
             direction='Input')
         param_province.filter.type = 'ValueList'
+        # filter list gets overridden in updateParameters below
         param_province.filter.list = ['YT', 'NU', 'NT']
         param_province.value = 'NU'
+
+        # Custom Jurisdiction Label
+        param_custom_label = arcpy.Parameter(
+            displayName='Custom Jurisdiction Label',
+            name='custom_label',
+            datatype='GPString',
+            parameterType='Optional',
+            direction='Input')
+
+        # Custom Jurisdiction Polygon
+        param_custom_polygon = arcpy.Parameter(
+            displayName='Custom Jurisdiction Polygon',
+            name='custom_polygon',
+            datatype='GPFeatureLayer',
+            parameterType='Optional',
+            direction='Input')
 
         # Include iNaturalist.ca Geoprivacy=Private
         param_include_ca_geo_private = arcpy.Parameter(
@@ -240,9 +257,10 @@ class iNatProvinceExport(object):
             direction='Input')
         param_include_unobscured.value = 'true'
 
-        params = [param_project_path, param_input_label, param_date_label, param_province,
-                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
-                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
+        params = [param_project_path, param_input_label, param_date_label, param_province, param_custom_label,
+                  param_custom_polygon, param_include_ca_geo_private, param_include_ca_geo_obscured,
+                  param_include_ca_taxon_private, param_include_ca_taxon_obscured, param_include_org_private_obscured,
+                  param_include_unobscured]
         return params
 
     def isLicensed(self):
@@ -263,6 +281,6 @@ class iNatProvinceExport(object):
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
-        inpe = iNatProvinceExportTool.iNatProvinceExportTool()
-        inpe.runiNatProvinceExportTool(parameters, messages)
+        inje = iNatJurisdictionExportTool.iNatJurisdictionExportTool()
+        inje.runiNatJurisdictionExportTool(parameters, messages)
         return
