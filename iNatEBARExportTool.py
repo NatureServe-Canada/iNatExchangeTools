@@ -10,6 +10,7 @@
 # import Python packages
 import arcpy
 import iNatExchangeUtils
+import datetime
 
 
 class iNatEBARExportTool:
@@ -24,7 +25,7 @@ class iNatEBARExportTool:
 
         # make variables for parms
         iNatExchangeUtils.displayMessage(messages, 'Processing parameters')
-        toolbox_path = os.path.basename()
+        tools_path = os.path.dirname(__file__)
         iNatExchangeUtils.project_path = parameters[0].valueAsText
         iNatExchangeUtils.output_path = iNatExchangeUtils.project_path + '/' + iNatExchangeUtils.output_folder
         iNatExchangeUtils.input_label = parameters[1].valueAsText
@@ -42,8 +43,7 @@ class iNatEBARExportTool:
         # export unobscured observations
         iNatExchangeUtils.displayMessage(messages, 'Exporting observations')
         arcpy.management.MakeFeatureLayer(observations, 'observations')
-        #arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', iNatExchangeUtils.jur_buffer)
-        arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', toolbox_folder +
+        arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', tools_path +
                                                '/iNatExchangeTools.gdb/JurisdictionBufferWGS84')
         arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NULL')
         if arcpy.Exists(iNatExchangeUtils.project_path + '/unobscured_for_ebar_import.csv'):
@@ -53,8 +53,7 @@ class iNatEBARExportTool:
                                          '/unobscured_for_ebar_import.csv')
 
         # export obscured observations
-        #arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', iNatExchangeUtils.jur_buffer)
-        arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', toolbox_folder +
+        arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', tools_path +
                                                '/iNatExchangeTools.gdb/JurisdictionBufferWGS84')
         arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NOT NULL')
         if arcpy.Exists(iNatExchangeUtils.project_path + '/obscured_for_ebar_import.csv'):
@@ -62,6 +61,10 @@ class iNatEBARExportTool:
         arcpy.conversion.TableToTable('observations', iNatExchangeUtils.project_path, 'obscured_for_ebar_import.csv')
         iNatExchangeUtils.displayMessage(messages, 'Created ' + iNatExchangeUtils.project_path +
                                          '/obscured_for_ebar_import.csv')
+
+        # finish time
+        finish_time = datetime.datetime.now()
+        iNatExchangeUtils.displayMessage(messages, 'Finish time: ' + str(finish_time))
 
 
 # controlling process

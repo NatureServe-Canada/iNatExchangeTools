@@ -83,7 +83,7 @@ class iNatImport(object):
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
-        ini = iNatImportTool()
+        ini = iNatImportTool.iNatImportTool()
         ini.runiNatImportTool(parameters, messages)
         return
 
@@ -134,7 +134,7 @@ class iNatEBARExport(object):
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
-        inee = iNatEBARExportTool()
+        inee = iNatEBARExportTool.iNatEBARExportTool()
         inee.runiNatEBARExportTool(parameters, messages)
         return
 
@@ -177,13 +177,13 @@ class iNatProvinceExport(object):
 
         # Province
         param_province = arcpy.Parameter(
-            displayName='Input Label',
-            name='input_label',
+            displayName='Province',
+            name='province',
             datatype='GPString',
             parameterType='Required',
             direction='Input')
         param_province.filter.type = 'ValueList'
-        param_province.filter.list = iNatExchangeUtils.prov_dict.keys()
+        param_province.filter.list = ['YT', 'NU', 'NT']
         param_province.value = 'NU'
 
         # Include iNaturalist.ca Geoprivacy=Private
@@ -252,6 +252,8 @@ class iNatProvinceExport(object):
     def updateParameters(self, parameters):
         """Modify the values and properties of parameters before internal validation is performed.  This method is 
         called whenever a parameter has been changed."""
+        param_province = parameters[3]
+        param_province.filter.list = list(iNatExchangeUtils.prov_dict.keys())
         return
 
     def updateMessages(self, parameters):
@@ -261,6 +263,6 @@ class iNatProvinceExport(object):
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
-        ini = iNatImportTool()
-        ini.runiNatImportTool(parameters, messages)
+        inpe = iNatProvinceExportTool.iNatProvinceExportTool()
+        inpe.runiNatProvinceExportTool(parameters, messages)
         return

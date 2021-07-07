@@ -10,6 +10,7 @@
 # import Python packages
 import arcpy
 import iNatExchangeUtils
+import datetime
 
 
 class iNatImportTool:
@@ -100,6 +101,10 @@ def get_coord(coord, private_coord):
         arcpy.management.AddIndex('quality_metrics', ['observation_id'], 'observation_id_idx')
         arcpy.management.AddIndex('taxa', ['id'], 'id_idx')
         arcpy.management.AddIndex('conservation_statuses', ['taxon_id'], 'taxon_id_idx')
+
+        # finish time
+        finish_time = datetime.datetime.now()
+        iNatExchangeUtils.displayMessage(messages, 'Finish time: ' + str(finish_time))
 
 
 # controlling process

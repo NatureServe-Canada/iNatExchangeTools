@@ -11,6 +11,8 @@
 import arcpy
 import iNatExchangeUtils
 import os
+import sys
+import datetime
 
 
 class iNatProvinceExportTool:
@@ -25,7 +27,7 @@ class iNatProvinceExportTool:
 
         # make variables for parms
         iNatExchangeUtils.displayMessage(messages, 'Processing parameters')
-        toolbox_path = os.path.basename()
+        tools_path = os.path.dirname(__file__)
         iNatExchangeUtils.project_path = parameters[0].valueAsText
         iNatExchangeUtils.output_path = iNatExchangeUtils.project_path + '/' + iNatExchangeUtils.output_folder
         iNatExchangeUtils.input_label = parameters[1].valueAsText
@@ -47,6 +49,8 @@ class iNatProvinceExportTool:
             param_include_org_private_obscured == 'false' and
             param_include_unobscured == 'false'):
             iNatExchangeUtils.displayMessage(messages, 'ERROR: you must include at least one set of records')
+            # terminate with error
+            return
 
         arcpy.gp.overwriteOutput = True
 
@@ -65,7 +69,7 @@ class iNatProvinceExportTool:
         arcpy.management.MakeFeatureLayer('observations', 'obs_lyr')
         arcpy.management.SelectLayerByAttribute('obs_lyr', 'NEW_SELECTION', "place_admin1_name = '" + prov_name + "'")
         #arcpy.management.MakeFeatureLayer(iNatExchangeUtils.jur_buffer, 'JurisdictionBuffer')
-        arcpy.management.MakeFeatureLayer(toolbox_folder + '/iNatExchangeTools.gdb/JurisdictionBufferWGS84',
+        arcpy.management.MakeFeatureLayer(tools_path + '/iNatExchangeTools.gdb/JurisdictionBufferWGS84',
                                           'JurisdictionBuffer')
         arcpy.management.SelectLayerByAttribute('JurisdictionBuffer', 'NEW_SELECTION',
                                                 "JurisdictionAbbreviation = '" + param_province + "'")
@@ -73,8 +77,7 @@ class iNatProvinceExportTool:
                                                selection_type='ADD_TO_SELECTION')
         if param_province not in('SK', 'AB'):
             #arcpy.management.MakeFeatureLayer(iNatExchangeUtils.marine_eez, 'MarineBuffer')
-            arcpy.management.MakeFeatureLayer(toolbox_folder + '/iNatExchangeTools.gdb/MarineBufferWGS84',
-                                              'MarineBuffer')
+            arcpy.management.MakeFeatureLayer(tools_path + '/iNatExchangeTools.gdb/MarineBufferWGS84', 'MarineBuffer')
             arcpy.management.SelectLayerByAttribute('MarineBuffer', 'NEW_SELECTION',
                                                     "JurisdictionAbbreviation = '" + param_province + "'")
             arcpy.management.SelectLayerByLocation('obs_lyr', 'INTERSECT', 'MarineBuffer',
@@ -292,6 +295,10 @@ class iNatProvinceExportTool:
         if param_include_unobscured == 'true':
             self.createBucketRelationships('unobscured', prov_gdb)
 
+        # finish time
+        finish_time = datetime.datetime.now()
+        iNatExchangeUtils.displayMessage(messages, 'Finish time: ' + str(finish_time))
+
 
     def saveBucket(this, all_obs_lyr, bucket_name, bucket_condition, prov_gdb, prov_folder):
         """subset the observations into a bucket and save"""
@@ -351,7 +358,7 @@ if __name__ == '__main__':
     param_date_label = arcpy.Parameter()
     param_date_label.value = '3June2021'
     param_province = arcpy.Parameter()
-    param_province.value = 'NU'
+    param_province.value = 'YT'
     param_include_ca_geo_private = arcpy.Parameter()
     param_include_ca_geo_private.value = 'true'
     param_include_ca_geo_obscured = arcpy.Parameter()
