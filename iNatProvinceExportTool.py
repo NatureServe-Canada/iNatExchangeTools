@@ -4,8 +4,9 @@
 # Credits: Randal Greene, Allison Siemens-Worsley
 # © NatureServe Canada 2021 under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
 
-# Program: iNatProvinceExportTool.py
-# ArcGIS Python tool for exporting iNaturalist.ca records into GDB and CSVs for transfer to Provinces
+# Program: iNatJurisdictionExportTool.py
+# ArcGIS Python tool for exporting iNaturalist.ca records into GDB and CSVs for transfer to Provinces or custom
+# jurisdictions (e.g., Parks Canada Agency)
 
 # import Python packages
 import arcpy
@@ -30,17 +31,22 @@ class iNatProvinceExportTool:
         iNatExchangeUtils.project_path = parameters[0].valueAsText
         iNatExchangeUtils.output_path = iNatExchangeUtils.project_path + '/' + iNatExchangeUtils.output_folder
         iNatExchangeUtils.input_label = parameters[1].valueAsText
-        iNatExchangeUtils.date_label = parameters[2].valueAsText
-        param_province = parameters[3].valueAsText
-        prov_name = iNatExchangeUtils.prov_dict[param_province]
         work_gdb = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb'
         arcpy.env.workspace = work_gdb
+        iNatExchangeUtils.date_label = parameters[2].valueAsText
+        # need either province parm or both custom parms
+        param_province = parameters[3].valueAsText
+        #param_custom_label = parameters[4].valueAsText
+        #param_custom_polygon = parameters[5].valueAsText
+        if param_province:
+            prov_name = iNatExchangeUtils.prov_dict[param_province]
         param_include_ca_geo_private = parameters[4].valueAsText
         param_include_ca_geo_obscured = parameters[5].valueAsText
         param_include_ca_taxon_private = parameters[6].valueAsText
         param_include_ca_taxon_obscured = parameters[7].valueAsText
         param_include_org_private_obscured = parameters[8].valueAsText
         param_include_unobscured = parameters[9].valueAsText
+        # need at least one set of records
         if (param_include_ca_geo_private == 'false' and
             param_include_ca_geo_obscured == 'false' and
             param_include_ca_taxon_private == 'false' and
@@ -115,9 +121,9 @@ class iNatProvinceExportTool:
         arcpy.management.AddIndex(prov_gdb + '/observations_all', ['taxon_id'], 'taxon_id_idx')
         arcpy.management.AddIndex(prov_gdb + '/observations_all', ['user_id'], 'user_id_idx')
         if arcpy.Exists(prov_folder + '/iNat_observations_all_' + iNatExchangeUtils.date_label + '.csv'):
-            arcpy.management.Delete(prov_folder + '/iNat_observations_all' + iNatExchangeUtils.date_label + '.csv')
+            arcpy.management.Delete(prov_folder + '/iNat_observations_all_' + iNatExchangeUtils.date_label + '.csv')
         arcpy.conversion.TableToTable('obs_lyr', prov_folder,
-                                      'iNat_observations_all' + iNatExchangeUtils.date_label + '.csv')
+                                      'iNat_observations_all_' + iNatExchangeUtils.date_label + '.csv')
 
         # annotations - assume all are resource_type='Observation'
         iNatExchangeUtils.displayMessage(messages, 'Exporting annotations')
@@ -298,7 +304,6 @@ class iNatProvinceExportTool:
         finish_time = datetime.datetime.now()
         iNatExchangeUtils.displayMessage(messages, 'Finish time: ' + str(finish_time))
 
-
     def saveBucket(this, all_obs_lyr, bucket_name, bucket_condition, prov_gdb, prov_folder):
         """subset the observations into a bucket and save"""
         arcpy.management.MakeFeatureLayer(all_obs_lyr, bucket_name + '_lyr', bucket_condition)
@@ -370,12 +375,6 @@ if __name__ == '__main__':
     param_include_org_private_obscured.value = 'true'
     param_include_unobscured = arcpy.Parameter()
     param_include_unobscured.value = 'true'
-    parameters = [param_project_path, param_input_label, param_date_label, param_province,
-                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
-                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
-    inpe.runiNatProvinceExportTool(parameters, None)
-
-    param_province.value = 'NL'
     parameters = [param_project_path, param_input_label, param_date_label, param_province,
                   param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
                   param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
