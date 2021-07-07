@@ -11,6 +11,7 @@
 import arcpy
 import iNatExchangeUtils
 import datetime
+import os
 
 
 class iNatEBARExportTool:
@@ -46,20 +47,20 @@ class iNatEBARExportTool:
         arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', tools_path +
                                                '/iNatExchangeTools.gdb/JurisdictionBufferWGS84')
         arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NULL')
-        if arcpy.Exists(iNatExchangeUtils.project_path + '/unobscured_for_ebar_import.csv'):
-            arcpy.Delete_management(iNatExchangeUtils.project_path + '/unobscured_for_ebar_import.csv')
-        arcpy.conversion.TableToTable('observations', iNatExchangeUtils.project_path, 'unobscured_for_ebar_import.csv')
-        iNatExchangeUtils.displayMessage(messages, 'Created ' + iNatExchangeUtils.project_path +
+        if arcpy.Exists(iNatExchangeUtils.output_path + '/unobscured_for_ebar_import.csv'):
+            arcpy.Delete_management(iNatExchangeUtils.output_path + '/unobscured_for_ebar_import.csv')
+        arcpy.conversion.TableToTable('observations', iNatExchangeUtils.output_path, 'unobscured_for_ebar_import.csv')
+        iNatExchangeUtils.displayMessage(messages, 'Created ' + iNatExchangeUtils.output_path +
                                          '/unobscured_for_ebar_import.csv')
 
         # export obscured observations
         arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', tools_path +
                                                '/iNatExchangeTools.gdb/JurisdictionBufferWGS84')
         arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NOT NULL')
-        if arcpy.Exists(iNatExchangeUtils.project_path + '/obscured_for_ebar_import.csv'):
-            arcpy.Delete_management(iNatExchangeUtils.project_path + '/obscured_for_ebar_import.csv')
-        arcpy.conversion.TableToTable('observations', iNatExchangeUtils.project_path, 'obscured_for_ebar_import.csv')
-        iNatExchangeUtils.displayMessage(messages, 'Created ' + iNatExchangeUtils.project_path +
+        if arcpy.Exists(iNatExchangeUtils.output_path + '/obscured_for_ebar_import.csv'):
+            arcpy.Delete_management(iNatExchangeUtils.output_path + '/obscured_for_ebar_import.csv')
+        arcpy.conversion.TableToTable('observations', iNatExchangeUtils.output_path, 'obscured_for_ebar_import.csv')
+        iNatExchangeUtils.displayMessage(messages, 'Created ' + iNatExchangeUtils.output_path +
                                          '/obscured_for_ebar_import.csv')
 
         # finish time

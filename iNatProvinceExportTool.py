@@ -11,7 +11,6 @@
 import arcpy
 import iNatExchangeUtils
 import os
-import sys
 import datetime
 
 
@@ -358,7 +357,7 @@ if __name__ == '__main__':
     param_date_label = arcpy.Parameter()
     param_date_label.value = '3June2021'
     param_province = arcpy.Parameter()
-    param_province.value = 'YT'
+    param_province.value = 'NL'
     param_include_ca_geo_private = arcpy.Parameter()
     param_include_ca_geo_private.value = 'true'
     param_include_ca_geo_obscured = arcpy.Parameter()
@@ -371,6 +370,60 @@ if __name__ == '__main__':
     param_include_org_private_obscured.value = 'true'
     param_include_unobscured = arcpy.Parameter()
     param_include_unobscured.value = 'true'
+    parameters = [param_project_path, param_input_label, param_date_label, param_province,
+                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
+                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
+    inpe.runiNatProvinceExportTool(parameters, None)
+
+    param_province.value = 'NL'
+    parameters = [param_project_path, param_input_label, param_date_label, param_province,
+                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
+                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
+    inpe.runiNatProvinceExportTool(parameters, None)
+
+    param_province.value = 'NS'
+    parameters = [param_project_path, param_input_label, param_date_label, param_province,
+                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
+                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
+    inpe.runiNatProvinceExportTool(parameters, None)
+
+    param_province.value = 'NB'
+    parameters = [param_project_path, param_input_label, param_date_label, param_province,
+                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
+                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
+    inpe.runiNatProvinceExportTool(parameters, None)
+
+    param_province.value = 'QC'
+    parameters = [param_project_path, param_input_label, param_date_label, param_province,
+                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
+                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
+    inpe.runiNatProvinceExportTool(parameters, None)
+
+    param_province.value = 'ON'
+    parameters = [param_project_path, param_input_label, param_date_label, param_province,
+                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
+                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
+    inpe.runiNatProvinceExportTool(parameters, None)
+
+    param_province.value = 'MB'
+    parameters = [param_project_path, param_input_label, param_date_label, param_province,
+                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
+                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
+    inpe.runiNatProvinceExportTool(parameters, None)
+
+    param_province.value = 'SK'
+    parameters = [param_project_path, param_input_label, param_date_label, param_province,
+                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
+                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
+    inpe.runiNatProvinceExportTool(parameters, None)
+
+    param_province.value = 'AB'
+    parameters = [param_project_path, param_input_label, param_date_label, param_province,
+                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
+                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
+    inpe.runiNatProvinceExportTool(parameters, None)
+
+    param_province.value = 'BC'
     parameters = [param_project_path, param_input_label, param_date_label, param_province,
                   param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
                   param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
