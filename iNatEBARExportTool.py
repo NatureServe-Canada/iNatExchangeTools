@@ -20,7 +20,7 @@ class iNatEBARExportTool:
         pass
 
     def runiNatEBARExportTool(self, parameters, messages):
-        # start time
+        # print start time
         start_time = datetime.datetime.now()
         iNatExchangeUtils.displayMessage(messages, 'Start time: ' + str(start_time))
 
