@@ -142,8 +142,9 @@ class iNatEBARExport(object):
 class iNatJurisdictionExport(object):
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
-        self.label = 'iNat Province Export'
-        self.description = 'Export iNaturalist.ca records into GDB and CSVs for transfer to Provinces'
+        self.label = 'iNat Jurisdiction Export'
+        self.description = 'Export iNaturalist.ca records into GDB and CSVs for transfer to Provinces or custom ' + \
+            'jurisdictions (e.g., Parks Canada Agency)'
         self.canRunInBackground = True
 
     def getParameterInfo(self):
@@ -202,6 +203,7 @@ class iNatJurisdictionExport(object):
             datatype='GPFeatureLayer',
             parameterType='Optional',
             direction='Input')
+        param_custom_polygon.filter.list = ["Polygon"]
 
         # Include iNaturalist.ca Geoprivacy=Private
         param_include_ca_geo_private = arcpy.Parameter(
