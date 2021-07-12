@@ -205,6 +205,14 @@ class iNatJurisdictionExport(object):
             direction='Input')
         param_custom_polygon.filter.list = ["Polygon"]
 
+        # Species Scientific Name
+        param_species = arcpy.Parameter(
+            displayName='Species Scientific Name Begins With',
+            name='species',
+            datatype='GPString',
+            parameterType='Optional',
+            direction='Input')
+
         # Include iNaturalist.ca Geoprivacy=Private
         param_include_ca_geo_private = arcpy.Parameter(
             displayName='Include iNaturalist.ca Geoprivacy=Private',
@@ -260,7 +268,7 @@ class iNatJurisdictionExport(object):
         param_include_unobscured.value = 'true'
 
         params = [param_project_path, param_input_label, param_date_label, param_province, param_custom_label,
-                  param_custom_polygon, param_include_ca_geo_private, param_include_ca_geo_obscured,
+                  param_custom_polygon, param_species, param_include_ca_geo_private, param_include_ca_geo_obscured,
                   param_include_ca_taxon_private, param_include_ca_taxon_obscured, param_include_org_private_obscured,
                   param_include_unobscured]
         return params

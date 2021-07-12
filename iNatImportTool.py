@@ -94,6 +94,7 @@ def get_coord(coord, private_coord):
         arcpy.management.AddIndex('observations', ['geoprivacy'], 'geoprivacy_idx')
         arcpy.management.AddIndex('observations', ['taxon_geoprivacy'], 'taxon_geoprivacy_idx')
         arcpy.management.AddIndex('observations', ['private_latitude'], 'private_latitude_idx')
+        arcpy.management.AddIndex('observations', ['scientific_name'], 'scientific_name_idx')
         arcpy.management.AddIndex('annotations', ['resource_id'], 'resource_id_idx')
         arcpy.management.AddIndex('comments', ['parent_id'], 'parent_id_idx')
         arcpy.management.AddIndex('identifications', ['observation_id'], 'observation_id_idx')

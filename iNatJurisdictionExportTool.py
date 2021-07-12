@@ -35,10 +35,11 @@ class iNatJurisdictionExportTool:
         work_gdb = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb'
         arcpy.env.workspace = work_gdb
         iNatExchangeUtils.date_label = parameters[2].valueAsText
-        # need either province parm or both custom parms
+        # need either province parm or both custom parms or species parm
         param_province = parameters[3].valueAsText
         param_custom_label = parameters[4].valueAsText
         param_custom_polygon = parameters[5].valueAsText
+        param_species = parameters[6].valueAsText
         jur_param_ok = True
         if param_province:
             prov_name = iNatExchangeUtils.prov_dict[param_province]
@@ -52,17 +53,19 @@ class iNatJurisdictionExportTool:
                 # terminate with error
                 return
         if not jur_param_ok:
-            iNatExchangeUtils.displayMessage(messages, 'ERROR: you must select either a Province, or provide a ' +
-                                             'Custom Jurisdiction Label and Polygon, but not both')
-            # terminate with error
-            return
+            if not param_species:
+                iNatExchangeUtils.displayMessage(messages, 'ERROR: you must select either a Province, or provide a ' +
+                                                 'Custom Jurisdiction Label and Polygon, but not both, or provide a ' +
+                                                 'Species')
+                # terminate with error
+                return
         # need at least one set of records
-        param_include_ca_geo_private = parameters[6].valueAsText
-        param_include_ca_geo_obscured = parameters[7].valueAsText
-        param_include_ca_taxon_private = parameters[8].valueAsText
-        param_include_ca_taxon_obscured = parameters[9].valueAsText
-        param_include_org_private_obscured = parameters[10].valueAsText
-        param_include_unobscured = parameters[11].valueAsText
+        param_include_ca_geo_private = parameters[7].valueAsText
+        param_include_ca_geo_obscured = parameters[8].valueAsText
+        param_include_ca_taxon_private = parameters[9].valueAsText
+        param_include_ca_taxon_obscured = parameters[10].valueAsText
+        param_include_org_private_obscured = parameters[11].valueAsText
+        param_include_unobscured = parameters[12].valueAsText
         if (param_include_ca_geo_private == 'false' and
             param_include_ca_geo_obscured == 'false' and
             param_include_ca_taxon_private == 'false' and
@@ -77,8 +80,10 @@ class iNatJurisdictionExportTool:
         # make folder and gdb for jurisdiction
         if param_province:
             jur_label = param_province
-        else:
+        elif param_custom_label:
             jur_label = param_custom_label
+        else:
+            jur_label = param_species
         jur_folder = iNatExchangeUtils.output_path + '/' + jur_label
         if not arcpy.Exists(jur_folder):
             arcpy.management.CreateFolder(iNatExchangeUtils.output_path, jur_label)
@@ -109,8 +114,13 @@ class iNatJurisdictionExportTool:
                                                         "JurisdictionAbbreviation = '" + param_province + "'")
                 arcpy.management.SelectLayerByLocation('obs_lyr', 'INTERSECT', 'MarineBuffer',
                                                        selection_type='ADD_TO_SELECTION')
-        else:
+        elif param_custom_polygon:
             arcpy.management.SelectLayerByLocation('obs_lyr', 'INTERSECT', param_custom_polygon)
+
+        # species param used for scientific_name like query
+        if param_species:
+            arcpy.management.SelectLayerByAttribute('obs_lyr', 'SUBSET_SELECTION', "scientific_name LIKE '" +
+                                                    param_species + "%'")
 
         # split into multiple buckets based on parameters
         # also merge into a temp for joining to related tables
@@ -147,7 +157,7 @@ class iNatJurisdictionExportTool:
         arcpy.management.AddIndex(jur_gdb + '/observations_all', ['user_id'], 'user_id_idx')
         if arcpy.Exists(jur_folder + '/iNat_observations_all_' + iNatExchangeUtils.date_label + '.csv'):
             arcpy.management.Delete(jur_folder + '/iNat_observations_all_' + iNatExchangeUtils.date_label + '.csv')
-        arcpy.conversion.TableToTable('obs_lyr', jur_folder,
+        arcpy.conversion.TableToTable(jur_gdb + '/observations_all', jur_folder,
                                       'iNat_observations_all_' + iNatExchangeUtils.date_label + '.csv')
 
         # annotations - assume all are resource_type='Observation'
