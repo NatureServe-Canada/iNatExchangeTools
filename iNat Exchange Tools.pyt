@@ -250,7 +250,7 @@ class iNatJurisdictionExport(object):
         param_include_ca_taxon_obscured.value = 'true'
 
         # Include iNaturalist.org Obscured
-        param_include_org__obscured = arcpy.Parameter(
+        param_include_org_obscured = arcpy.Parameter(
             displayName='Include iNaturalist.org Obscured',
             name='include_org_obscured',
             datatype='GPBoolean',
