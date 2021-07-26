@@ -395,6 +395,7 @@ if __name__ == '__main__':
     param_date_label = arcpy.Parameter()
     param_date_label.value = '3June2021'
     param_province = arcpy.Parameter()
+    param_province.value = 'NL'
     param_custom_label = arcpy.Parameter()
     param_custom_label.value = None
     param_custom_polygon = arcpy.Parameter()
