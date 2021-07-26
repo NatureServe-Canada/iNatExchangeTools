@@ -213,14 +213,14 @@ class iNatJurisdictionExport(object):
             parameterType='Optional',
             direction='Input')
 
-        # Include iNaturalist.ca Geoprivacy=Private
-        param_include_ca_geo_private = arcpy.Parameter(
-            displayName='Include iNaturalist.ca Geoprivacy=Private',
-            name='include_ca_geo_private',
-            datatype='GPBoolean',
-            parameterType='Required',
-            direction='Input')
-        param_include_ca_geo_private.value = 'true'
+        ## Include iNaturalist.ca Geoprivacy=Private
+        #param_include_ca_geo_private = arcpy.Parameter(
+        #    displayName='Include iNaturalist.ca Geoprivacy=Private',
+        #    name='include_ca_geo_private',
+        #    datatype='GPBoolean',
+        #    parameterType='Required',
+        #    direction='Input')
+        #param_include_ca_geo_private.value = 'true'
 
         # Include iNaturalist.ca Geoprivacy=Obscured
         param_include_ca_geo_obscured = arcpy.Parameter(
@@ -231,14 +231,14 @@ class iNatJurisdictionExport(object):
             direction='Input')
         param_include_ca_geo_obscured.value = 'true'
 
-        # Include iNaturalist.ca Taxon Geoprivacy=Private
-        param_include_ca_taxon_private = arcpy.Parameter(
-            displayName='Include iNaturalist.ca Taxon Geoprivacy=Private',
-            name='include_ca_taxon_private',
-            datatype='GPBoolean',
-            parameterType='Required',
-            direction='Input')
-        param_include_ca_taxon_private.value = 'true'
+        ## Include iNaturalist.ca Taxon Geoprivacy=Private
+        #param_include_ca_taxon_private_obscured = arcpy.Parameter(
+        #    displayName='Include iNaturalist.ca Taxon Geoprivacy=Private',
+        #    name='include_ca_taxon_private',
+        #    datatype='GPBoolean',
+        #    parameterType='Required',
+        #    direction='Input')
+        #param_include_ca_taxon_private.value = 'true'
 
         # Include iNaturalist.ca Taxon Geoprivacy=Obscured
         param_include_ca_taxon_obscured = arcpy.Parameter(
@@ -249,14 +249,14 @@ class iNatJurisdictionExport(object):
             direction='Input')
         param_include_ca_taxon_obscured.value = 'true'
 
-        # Include iNaturalist.org Private and Obscured
-        param_include_org_private_obscured = arcpy.Parameter(
-            displayName='Include iNaturalist.org Private and Obscured',
-            name='include_org_private_obscured',
+        # Include iNaturalist.org Obscured
+        param_include_org__obscured = arcpy.Parameter(
+            displayName='Include iNaturalist.org Obscured',
+            name='include_org_obscured',
             datatype='GPBoolean',
             parameterType='Required',
             direction='Input')
-        param_include_org_private_obscured.value = 'true'
+        param_include_org_obscured.value = 'true'
 
         # Include Unobscured
         param_include_unobscured = arcpy.Parameter(
@@ -268,9 +268,8 @@ class iNatJurisdictionExport(object):
         param_include_unobscured.value = 'true'
 
         params = [param_project_path, param_input_label, param_date_label, param_province, param_custom_label,
-                  param_custom_polygon, param_species, param_include_ca_geo_private, param_include_ca_geo_obscured,
-                  param_include_ca_taxon_private, param_include_ca_taxon_obscured, param_include_org_private_obscured,
-                  param_include_unobscured]
+                  param_custom_polygon, param_species, param_include_ca_geo_obscured, param_include_ca_taxon_obscured,
+                  param_include_org_obscured, param_include_unobscured]
         return params
 
     def isLicensed(self):

@@ -2,11 +2,9 @@ Export for CDCs from iNaturalist.ca
 
 Data are provided in both file geodatabase (including relationship classes) and comma-separated value formats. The following iNaturalist tables are provided:
 - observations_all, a merging of one or more of:
-    - observations_ca_geo_private (iNaturalist.ca records with geoprivacy = private, with unobscured coordinates)
     - observations_ca_geo_obscured (iNaturalist.ca records with geoprivacy = obscured, with unobscured coordinates)
-    - observations_ca_taxon_private (iNaturalist.ca records with taxon_geoprivacy = private, with unobscured coordinates)
     - observations_ca_taxon_obscured (iNaturalist.ca records with taxon_geoprivacy = obscured, with unobscured coordinates)
-    - observations_org_private_obscured (private or obscured iNaturalist.org records, with obscured coordinates)
+    - observations_org_obscured (obscured iNaturalist.org records, with obscured coordinates)
 	- observations_unobscured (records without geoprivacy or taxon_privacy)
 - annotations
 - comments

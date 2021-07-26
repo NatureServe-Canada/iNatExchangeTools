@@ -60,17 +60,15 @@ class iNatJurisdictionExportTool:
                 # terminate with error
                 return
         # need at least one set of records
-        param_include_ca_geo_private = parameters[7].valueAsText
-        param_include_ca_geo_obscured = parameters[8].valueAsText
-        param_include_ca_taxon_private = parameters[9].valueAsText
-        param_include_ca_taxon_obscured = parameters[10].valueAsText
-        param_include_org_private_obscured = parameters[11].valueAsText
-        param_include_unobscured = parameters[12].valueAsText
-        if (param_include_ca_geo_private == 'false' and
-            param_include_ca_geo_obscured == 'false' and
-            param_include_ca_taxon_private == 'false' and
+        #param_include_ca_geo_private = parameters[7].valueAsText
+        param_include_ca_geo_obscured = parameters[7].valueAsText
+        #param_include_ca_taxon_private = parameters[8].valueAsText
+        param_include_ca_taxon_obscured = parameters[8].valueAsText
+        param_include_org_obscured = parameters[9].valueAsText
+        param_include_unobscured = parameters[10].valueAsText
+        if (param_include_ca_geo_obscured == 'false' and
             param_include_ca_taxon_obscured == 'false' and
-            param_include_org_private_obscured == 'false' and
+            param_include_org_obscured == 'false' and
             param_include_unobscured == 'false'):
             iNatExchangeUtils.displayMessage(messages, 'ERROR: you must include at least one set of records')
             # terminate with error
@@ -125,30 +123,30 @@ class iNatJurisdictionExportTool:
         # split into multiple buckets based on parameters
         # also merge into a temp for joining to related tables
         merge_list = []
-        if param_include_ca_geo_private == 'true':
-            merge_list.append(self.saveBucket('obs_lyr', 'ca_geo_private',
-                                              "geoprivacy = 'private' AND private_latitude IS NOT NULL",
-                                              jur_gdb, jur_folder))
+        #if param_include_ca_geo_private == 'true':
+        #    merge_list.append(self.saveBucket('obs_lyr', 'ca_geo_private',
+        #                                      "geoprivacy = 'private' AND private_latitude IS NOT NULL",
+        #                                      jur_gdb, jur_folder))
         if param_include_ca_geo_obscured == 'true':
             merge_list.append(self.saveBucket('obs_lyr', 'ca_geo_obscured',
                                               "geoprivacy = 'obscured' AND private_latitude IS NOT NULL",
                                               jur_gdb, jur_folder))
-        if param_include_ca_taxon_private == 'true':
-            merge_list.append(self.saveBucket('obs_lyr', 'ca_taxon_private',
-                                              "(geoprivacy = 'open' OR geoprivacy IS NULL) AND taxon_geoprivacy = " +
-                                              "'private' AND private_latitude IS NOT NULL", jur_gdb, jur_folder))
+        #if param_include_ca_taxon_private == 'true':
+        #    merge_list.append(self.saveBucket('obs_lyr', 'ca_taxon_private',
+        #                                      "(geoprivacy = 'open' OR geoprivacy IS NULL) AND taxon_geoprivacy = " +
+        #                                      "'private' AND private_latitude IS NOT NULL", jur_gdb, jur_folder))
         if param_include_ca_taxon_obscured == 'true':
             merge_list.append(self.saveBucket('obs_lyr', 'ca_taxon_obscured', "(geoprivacy = 'open' OR geoprivacy " +
-                                              "IS NULL) AND taxon_geoprivacy = 'obscured' AND private_latitude IS " +
-                                              "NOT NULL", jur_gdb, jur_folder))
-        if param_include_org_private_obscured == 'true':
-            merge_list.append(self.saveBucket('obs_lyr', 'org_private_obscured',
-                                              "(geoprivacy IN ('obscured', 'private') OR taxon_geoprivacy IN " +
+                                              "IS NULL) AND taxon_geoprivacy IN ('obscured', 'private') AND " +
+                                              "private_latitude IS NOT NULL", jur_gdb, jur_folder))
+        if param_include_org_obscured == 'true':
+            merge_list.append(self.saveBucket('obs_lyr', 'org_obscured',
+                                              "(geoprivacy IN ('obscured') OR taxon_geoprivacy IN " +
                                               "('obscured', 'private')) AND private_latitude IS NULL", jur_gdb,
                                               jur_folder))
         if param_include_unobscured == 'true':
             merge_list.append(self.saveBucket('obs_lyr', 'unobscured',
-                                              "(geoprivacy = 'open' OR  geoprivacy IS NULL) AND (taxon_geoprivacy = " +
+                                              "(geoprivacy = 'open' OR geoprivacy IS NULL) AND (taxon_geoprivacy = " +
                                               "'open' OR taxon_geoprivacy IS NULL) AND private_latitude IS NULL",
                                               jur_gdb, jur_folder))
         arcpy.management.Merge(merge_list, jur_gdb + '/observations_all')
@@ -322,16 +320,16 @@ class iNatJurisdictionExportTool:
                                                  'users_quality_metrics', 'SIMPLE', 'quality_metrics', 'users', 'NONE',
                                                  'ONE_TO_MANY', 'NONE', 'id', 'user_id')
         self.createBucketRelationships('all', jur_gdb)
-        if param_include_ca_geo_private == 'true':
-            self.createBucketRelationships('ca_geo_private', jur_gdb)
+        #if param_include_ca_geo_private == 'true':
+        #    self.createBucketRelationships('ca_geo_private', jur_gdb)
         if param_include_ca_geo_obscured == 'true':
             self.createBucketRelationships('ca_geo_obscured', jur_gdb)
-        if param_include_ca_taxon_private == 'true':
-            self.createBucketRelationships('ca_taxon_private', jur_gdb)
+        #if param_include_ca_taxon_private == 'true':
+        #    self.createBucketRelationships('ca_taxon_private', jur_gdb)
         if param_include_ca_taxon_obscured == 'true':
             self.createBucketRelationships('ca_taxon_obscured', jur_gdb)
-        if param_include_org_private_obscured == 'true':
-            self.createBucketRelationships('org_private_obscured', jur_gdb)
+        if param_include_org_obscured == 'true':
+            self.createBucketRelationships('org_obscured', jur_gdb)
         if param_include_unobscured == 'true':
             self.createBucketRelationships('unobscured', jur_gdb)
 
@@ -397,68 +395,27 @@ if __name__ == '__main__':
     param_date_label = arcpy.Parameter()
     param_date_label.value = '3June2021'
     param_province = arcpy.Parameter()
-    param_province.value = 'NL'
-    param_include_ca_geo_private = arcpy.Parameter()
-    param_include_ca_geo_private.value = 'true'
+    param_custom_label = arcpy.Parameter()
+    param_custom_label.value = None
+    param_custom_polygon = arcpy.Parameter()
+    param_custom_polygon.value = None
+    param_species = arcpy.Parameter()
+    param_species.value = None
+    #param_include_ca_geo_private = arcpy.Parameter()
+    #param_include_ca_geo_private.value = 'true'
     param_include_ca_geo_obscured = arcpy.Parameter()
     param_include_ca_geo_obscured.value = 'true'
-    param_include_ca_taxon_private = arcpy.Parameter()
-    param_include_ca_taxon_private.value = 'true'
+    #param_include_ca_taxon_private = arcpy.Parameter()
+    #param_include_ca_taxon_private.value = 'true'
     param_include_ca_taxon_obscured = arcpy.Parameter()
     param_include_ca_taxon_obscured.value = 'true'
-    param_include_org_private_obscured = arcpy.Parameter()
-    param_include_org_private_obscured.value = 'true'
+    param_include_org_obscured = arcpy.Parameter()
+    param_include_org_obscured.value = 'true'
     param_include_unobscured = arcpy.Parameter()
     param_include_unobscured.value = 'true'
-    parameters = [param_project_path, param_input_label, param_date_label, param_province,
-                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
-                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
-    inje.runiNatJurisdictionExportTool(parameters, None)
-
-    param_province.value = 'NS'
-    parameters = [param_project_path, param_input_label, param_date_label, param_province,
-                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
-                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
-    inje.runiNatJurisdictionExportTool(parameters, None)
-
-    param_province.value = 'NB'
-    parameters = [param_project_path, param_input_label, param_date_label, param_province,
-                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
-                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
-    inje.runiNatJurisdictionExportTool(parameters, None)
-
-    param_province.value = 'QC'
-    parameters = [param_project_path, param_input_label, param_date_label, param_province,
-                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
-                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
-    inje.runiNatJurisdictionExportTool(parameters, None)
-
-    param_province.value = 'ON'
-    parameters = [param_project_path, param_input_label, param_date_label, param_province,
-                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
-                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
-    inje.runiNatJurisdictionExportTool(parameters, None)
-
-    param_province.value = 'MB'
-    parameters = [param_project_path, param_input_label, param_date_label, param_province,
-                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
-                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
-    inje.runiNatJurisdictionExportTool(parameters, None)
-
-    param_province.value = 'SK'
-    parameters = [param_project_path, param_input_label, param_date_label, param_province,
-                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
-                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
-    inje.runiNatJurisdictionExportTool(parameters, None)
-
-    param_province.value = 'AB'
-    parameters = [param_project_path, param_input_label, param_date_label, param_province,
-                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
-                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
-    inje.runiNatJurisdictionExportTool(parameters, None)
-
-    param_province.value = 'BC'
-    parameters = [param_project_path, param_input_label, param_date_label, param_province,
-                  param_include_ca_geo_private, param_include_ca_geo_obscured, param_include_ca_taxon_private, 
-                  param_include_ca_taxon_obscured, param_include_org_private_obscured, param_include_unobscured]
-    inje.runiNatJurisdictionExportTool(parameters, None)
+    for prov in ['NL']:
+        param_province.value = prov
+        parameters = [param_project_path, param_input_label, param_date_label, param_province, param_custom_label,
+                      param_custom_polygon, param_species, param_include_ca_geo_obscured,
+                      param_include_ca_taxon_obscured, param_include_org_obscured, param_include_unobscured]
+        inje.runiNatJurisdictionExportTool(parameters, None)
