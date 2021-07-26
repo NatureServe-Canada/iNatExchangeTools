@@ -86,6 +86,8 @@ def get_coord(coord, private_coord):
         iNatExchangeUtils.displayMessage(messages, 'Importing users')
         arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
                                       'users.csv', arcpy.env.workspace, 'users')
+        arcpy.management.DeleteField(arcpy.env.workspace + '/users', 'email')
+        arcpy.management.DeleteField(arcpy.env.workspace + '/users', 'name')
 
         # add indexes
         iNatExchangeUtils.displayMessage(messages, 'Indexing query and join fields')

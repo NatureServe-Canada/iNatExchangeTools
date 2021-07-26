@@ -413,8 +413,7 @@ if __name__ == '__main__':
     param_include_org_obscured.value = 'true'
     param_include_unobscured = arcpy.Parameter()
     param_include_unobscured.value = 'true'
-    #for prov in ['NL']:
-    for prov in ['NS', 'PE', 'NB', 'QC', 'ON', 'MB', 'SK', 'AB', 'BC', 'YT', 'NT', 'NU']:
+    for prov in ['NL', 'NS', 'PE', 'NB', 'QC', 'ON', 'MB', 'SK', 'AB', 'BC', 'YT', 'NT', 'NU']:
         param_province.value = prov
         parameters = [param_project_path, param_input_label, param_date_label, param_province, param_custom_label,
                       param_custom_polygon, param_species, param_include_ca_geo_obscured,
