@@ -46,7 +46,9 @@ class iNatEBARExportTool:
         arcpy.management.MakeFeatureLayer(observations, 'observations')
         arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', tools_path +
                                                '/iNatExchangeTools.gdb/JurisdictionBufferWGS84')
-        arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NULL')
+        arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION',
+                                                'private_latitude IS NULL ' +
+                                                "AND (geoprivacy IS NULL OR geoprivacy != 'private'")
         if arcpy.Exists(iNatExchangeUtils.output_path + '/unobscured_for_ebar_import.csv'):
             arcpy.Delete_management(iNatExchangeUtils.output_path + '/unobscured_for_ebar_import.csv')
         arcpy.conversion.TableToTable('observations', iNatExchangeUtils.output_path, 'unobscured_for_ebar_import.csv')
@@ -56,7 +58,9 @@ class iNatEBARExportTool:
         # export obscured observations
         arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', tools_path +
                                                '/iNatExchangeTools.gdb/JurisdictionBufferWGS84')
-        arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NOT NULL')
+        arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NOT NULL' +
+                                                "AND (geoprivacy IS NULL OR geoprivacy != 'private'")
+                                                
         if arcpy.Exists(iNatExchangeUtils.output_path + '/obscured_for_ebar_import.csv'):
             arcpy.Delete_management(iNatExchangeUtils.output_path + '/obscured_for_ebar_import.csv')
         arcpy.conversion.TableToTable('observations', iNatExchangeUtils.output_path, 'obscured_for_ebar_import.csv')
