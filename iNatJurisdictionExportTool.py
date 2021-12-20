@@ -78,6 +78,11 @@ class iNatJurisdictionExportTool:
         # make folder and gdb for jurisdiction
         if param_province:
             jur_label = param_province
+            # Atlantic Canada consistes of four provinces
+            if param_province == 'AC':
+                param_province = "'NL', 'NS', 'NB', 'PE'"
+            else:
+                param_province = "'" + param_province + "'"
         elif param_custom_label:
             jur_label = param_custom_label
         else:
@@ -102,14 +107,14 @@ class iNatJurisdictionExportTool:
             arcpy.management.MakeFeatureLayer(tools_path + '/iNatExchangeTools.gdb/JurisdictionBufferWGS84',
                                               'JurisdictionBuffer')
             arcpy.management.SelectLayerByAttribute('JurisdictionBuffer', 'NEW_SELECTION',
-                                                    "JurisdictionAbbreviation = '" + param_province + "'")
+                                                "JurisdictionAbbreviation IN (" + param_province + ")")
             arcpy.management.SelectLayerByLocation('obs_lyr', 'INTERSECT', 'JurisdictionBuffer',
                                                    selection_type='ADD_TO_SELECTION')
             if param_province not in('SK', 'AB'):
                 arcpy.management.MakeFeatureLayer(tools_path + '/iNatExchangeTools.gdb/MarineBufferWGS84',
                                                   'MarineBuffer')
                 arcpy.management.SelectLayerByAttribute('MarineBuffer', 'NEW_SELECTION',
-                                                        "JurisdictionAbbreviation = '" + param_province + "'")
+                                                        "JurisdictionAbbreviation IN (" + param_province + ")")
                 arcpy.management.SelectLayerByLocation('obs_lyr', 'INTERSECT', 'MarineBuffer',
                                                        selection_type='ADD_TO_SELECTION')
         elif param_custom_polygon:

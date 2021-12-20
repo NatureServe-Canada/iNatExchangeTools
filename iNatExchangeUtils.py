@@ -11,7 +11,8 @@
 import arcpy
 
 
-prov_dict = {'NL': 'Newfoundland and Labrador',
+prov_dict = {'AC': 'Atlantic Canada',
+             'NL': 'Newfoundland and Labrador',
              'NS': 'Nova Scotia',
              'NB': 'New Brunswick',
              'PE': 'Prince Edward Island',
