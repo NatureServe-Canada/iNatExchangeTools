@@ -48,7 +48,7 @@ class iNatEBARExportTool:
                                                '/iNatExchangeTools.gdb/JurisdictionBufferWGS84')
         arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION',
                                                 'private_latitude IS NULL ' +
-                                                "AND (geoprivacy IS NULL OR geoprivacy != 'private'")
+                                                "AND (geoprivacy IS NULL OR geoprivacy <> 'private')")
         if arcpy.Exists(iNatExchangeUtils.output_path + '/unobscured_for_ebar_import.csv'):
             arcpy.Delete_management(iNatExchangeUtils.output_path + '/unobscured_for_ebar_import.csv')
         arcpy.conversion.TableToTable('observations', iNatExchangeUtils.output_path, 'unobscured_for_ebar_import.csv')
@@ -58,8 +58,8 @@ class iNatEBARExportTool:
         # export obscured observations
         arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', tools_path +
                                                '/iNatExchangeTools.gdb/JurisdictionBufferWGS84')
-        arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NOT NULL' +
-                                                "AND (geoprivacy IS NULL OR geoprivacy != 'private'")
+        arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NOT NULL ' +
+                                                "AND (geoprivacy IS NULL OR geoprivacy <> 'private')")
                                                 
         if arcpy.Exists(iNatExchangeUtils.output_path + '/obscured_for_ebar_import.csv'):
             arcpy.Delete_management(iNatExchangeUtils.output_path + '/obscured_for_ebar_import.csv')
@@ -79,6 +79,6 @@ if __name__ == '__main__':
     param_project_path = arcpy.Parameter()
     param_project_path.value = 'C:/GIS/iNatExchange'
     param_input_label = arcpy.Parameter()
-    param_input_label.value = 'inaturalist-ca-5-20210603-1622752843'
+    param_input_label.value = 'inaturalist-ca-5'
     parameters = [param_project_path, param_input_label]
     inee.runiNatEBARExportTool(parameters, None)

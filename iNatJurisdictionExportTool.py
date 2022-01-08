@@ -110,7 +110,7 @@ class iNatJurisdictionExportTool:
                                                 "JurisdictionAbbreviation IN (" + param_province + ")")
             arcpy.management.SelectLayerByLocation('obs_lyr', 'INTERSECT', 'JurisdictionBuffer',
                                                    selection_type='ADD_TO_SELECTION')
-            if param_province not in('SK', 'AB'):
+            if param_province not in('SK', 'AB', 'YT'):
                 arcpy.management.MakeFeatureLayer(tools_path + '/iNatExchangeTools.gdb/MarineBufferWGS84',
                                                   'MarineBuffer')
                 arcpy.management.SelectLayerByAttribute('MarineBuffer', 'NEW_SELECTION',
@@ -419,8 +419,8 @@ if __name__ == '__main__':
     param_include_org_obscured.value = 'true'
     param_include_unobscured = arcpy.Parameter()
     param_include_unobscured.value = 'true'
-    #for prov in ['AC', 'QC']:
-    for prov in ['ON', 'MB', 'SK', 'AB', 'BC', 'YT', 'NT', 'NU']:
+    #for prov in ['AC', 'QC', 'ON', 'MB', 'SK', 'AB', 'BC', 'YT', 'NT', 'NU']:
+    for prov in ['YT', 'NT', 'NU']:
         param_province.value = prov
         parameters = [param_project_path, param_input_label, param_date_label, param_province, param_custom_label,
                       param_custom_polygon, param_species, param_include_ca_geo_obscured,
