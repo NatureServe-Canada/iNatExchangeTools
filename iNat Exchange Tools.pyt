@@ -211,7 +211,8 @@ class iNatJurisdictionExport(object):
             name='species',
             datatype='GPString',
             parameterType='Optional',
-            direction='Input')
+            direction='Input',
+            multiValue=True)
 
         ## Include iNaturalist.ca Geoprivacy=Private
         #param_include_ca_geo_private = arcpy.Parameter(

@@ -10,6 +10,8 @@
 
 # import Python packages
 import arcpy
+import arcpy.management
+import arcpy.conversion
 import iNatExchangeUtils
 import os
 import datetime
@@ -122,8 +124,14 @@ class iNatJurisdictionExportTool:
 
         # species param used for scientific_name like query
         if param_species:
-            arcpy.management.SelectLayerByAttribute('obs_lyr', 'SUBSET_SELECTION', "scientific_name LIKE '" +
-                                                    param_species + "%'")
+            filter = ''
+            param_species = param_species.replace("'", '')
+            param_species = param_species.split(';')
+            for species in param_species:
+                if len(filter) > 0:
+                    filter += ' OR '
+                filter += "scientific_name LIKE '" + species + "%'"
+            arcpy.management.SelectLayerByAttribute('obs_lyr', 'ADD_TO_SELECTION', filter)
 
         # split into multiple buckets based on parameters
         # also merge into a temp for joining to related tables
@@ -400,13 +408,13 @@ if __name__ == '__main__':
     param_date_label = arcpy.Parameter()
     param_date_label.value = '7Dec2021'
     param_province = arcpy.Parameter()
-    param_province.value = 'AC'
+    param_province.value = None
     param_custom_label = arcpy.Parameter()
-    param_custom_label.value = None
+    param_custom_label.value = 'CWFSelectTurtles'
     param_custom_polygon = arcpy.Parameter()
     param_custom_polygon.value = None
     param_species = arcpy.Parameter()
-    param_species.value = None
+    param_species.value = "'Emydoidea blandingii';'Graptemys geographica';'Sternotherus odoratus'"
     #param_include_ca_geo_private = arcpy.Parameter()
     #param_include_ca_geo_private.value = 'true'
     param_include_ca_geo_obscured = arcpy.Parameter()
@@ -419,10 +427,14 @@ if __name__ == '__main__':
     param_include_org_obscured.value = 'true'
     param_include_unobscured = arcpy.Parameter()
     param_include_unobscured.value = 'true'
-    #for prov in ['AC', 'QC', 'ON', 'MB', 'SK', 'AB', 'BC', 'YT', 'NT', 'NU']:
-    for prov in ['YT', 'NT', 'NU']:
-        param_province.value = prov
-        parameters = [param_project_path, param_input_label, param_date_label, param_province, param_custom_label,
-                      param_custom_polygon, param_species, param_include_ca_geo_obscured,
-                      param_include_ca_taxon_obscured, param_include_org_obscured, param_include_unobscured]
-        inje.runiNatJurisdictionExportTool(parameters, None)
+    # for prov in ['AC', 'QC', 'ON', 'MB', 'SK', 'AB', 'BC', 'YT', 'NT', 'NU']:
+    # for prov in ['YT', 'NT', 'NU']:
+    #     param_province.value = prov
+    #     parameters = [param_project_path, param_input_label, param_date_label, param_province, param_custom_label,
+    #                   param_custom_polygon, param_species, param_include_ca_geo_obscured,
+    #                   param_include_ca_taxon_obscured, param_include_org_obscured, param_include_unobscured]
+    #     inje.runiNatJurisdictionExportTool(parameters, None)
+    parameters = [param_project_path, param_input_label, param_date_label, param_province, param_custom_label,
+                  param_custom_polygon, param_species, param_include_ca_geo_obscured,
+                  param_include_ca_taxon_obscured, param_include_org_obscured, param_include_unobscured]
+    inje.runiNatJurisdictionExportTool(parameters, None)
