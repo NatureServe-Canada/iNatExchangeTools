@@ -45,6 +45,7 @@ class iNatImportTool:
                                          'Plotting observations, preferring private coordinates where available')
         arcpy.management.AddField('obs_temp', 'lon', 'DOUBLE')
         arcpy.management.AddField('obs_temp', 'lat', 'DOUBLE')
+        arcpy.management.AddField('obs_temp', 'observed_on_text', 'TEXT')
         expr = '''
 def get_coord(coord, private_coord):
     if private_coord:
@@ -54,6 +55,8 @@ def get_coord(coord, private_coord):
         arcpy.management.CalculateField('obs_temp', 'lon', 'get_coord(!longitude!, !private_longitude!)', 'PYTHON3',
                                         expr)
         arcpy.management.CalculateField('obs_temp', 'lat', 'get_coord(!latitude!, !private_latitude!)', 'PYTHON3',
+                                        expr)
+        arcpy.management.CalculateField('obs_temp', 'observed_on_text', "!observed_on!.strftime('%Y-%m-%d')", 'PYTHON3',
                                         expr)
         arcpy.management.XYTableToPoint('obs_temp', 'observations', 'lon', 'lat')
         arcpy.management.Delete('obs_temp')
