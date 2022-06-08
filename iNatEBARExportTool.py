@@ -32,15 +32,6 @@ class iNatEBARExportTool:
         iNatExchangeUtils.input_label = parameters[1].valueAsText
         observations = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb/observations'
 
-        # convert date to text if necessary
-        convert_date = False
-        field_type = iNatExchangeUtils.fieldType(observations, 'observed_on')
-        if not field_type:
-            convert_date = True
-            # add field
-        elif field_type != 'Date':
-            convert_date = True
-
         # export unobscured observations
         iNatExchangeUtils.displayMessage(messages, 'Exporting observations')
         arcpy.management.MakeFeatureLayer(observations, 'observations')
