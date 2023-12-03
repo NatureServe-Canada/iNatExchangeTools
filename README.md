@@ -2,7 +2,7 @@
 Tools for preparing iNaturalist data for jurisdictions and EBAR<br>
 Credits: Randal Greene, Allison Siemens-Worsley<br>
 � NatureServe Canada 2021 under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)<br>
-Tested in ArcGIS Pro 2.8.1, but likely compatible with ArcMap 10.x and ArcGIS Pro 2.x<br>
+Tested in ArcGIS Pro 2.8.1, but likely compatible with ArcMap 10.x and ArcGIS Pro 3.x<br>
 <br>
 Use:
 - Copy/download iNatExhangeTools, including iNatExchangeTools.gdb, to local drive
