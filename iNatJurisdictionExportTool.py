@@ -406,13 +406,15 @@ if __name__ == '__main__':
     param_input_label = arcpy.Parameter()
     param_input_label.value = 'inaturalist-canada-5'
     param_date_label = arcpy.Parameter()
-    param_date_label.value = '7Jun2022'
+    param_date_label.value = '8Dec2023'
     param_province = arcpy.Parameter()
     param_province.value = None
     param_custom_label = arcpy.Parameter()
-    param_custom_label.value = 'PCA_100km'
+    # param_custom_label.value = 'PCA_100km'
+    param_custom_label.value = None
     param_custom_polygon = arcpy.Parameter()
-    param_custom_polygon.value = 'C:/GIS/iNatExchange/iNatExchange.gdb/PCA_100km'
+    # param_custom_polygon.value = 'C:/GIS/iNatExchange/iNatExchange.gdb/PCA_100km'
+    param_custom_polygon.value = None
     param_species = arcpy.Parameter()
     param_species.value = None # "'Emydoidea blandingii';'Graptemys geographica';'Sternotherus odoratus'"
     #param_include_ca_geo_private = arcpy.Parameter()
@@ -427,14 +429,14 @@ if __name__ == '__main__':
     param_include_org_obscured.value = 'true'
     param_include_unobscured = arcpy.Parameter()
     param_include_unobscured.value = 'true'
-    # for prov in ['AC', 'QC', 'ON', 'MB', 'SK', 'AB', 'BC', 'YT', 'NT', 'NU']:
-    # for prov in ['YT', 'NT', 'NU']:
-        # param_province.value = prov
-        # parameters = [param_project_path, param_input_label, param_date_label, param_province, param_custom_label,
-        #               param_custom_polygon, param_species, param_include_ca_geo_obscured,
-        #               param_include_ca_taxon_obscured, param_include_org_obscured, param_include_unobscured]
-        # inje.runiNatJurisdictionExportTool(parameters, None)
-    parameters = [param_project_path, param_input_label, param_date_label, param_province, param_custom_label,
-                  param_custom_polygon, param_species, param_include_ca_geo_obscured,
-                  param_include_ca_taxon_obscured, param_include_org_obscured, param_include_unobscured]
-    inje.runiNatJurisdictionExportTool(parameters, None)
+    #for prov in ['YT', 'NT', 'NU', 'BC']:
+    for prov in ['AC', 'QC', 'ON', 'MB', 'SK', 'AB', 'BC', 'YT', 'NT', 'NU']:
+        param_province.value = prov
+        parameters = [param_project_path, param_input_label, param_date_label, param_province, param_custom_label,
+                      param_custom_polygon, param_species, param_include_ca_geo_obscured,
+                      param_include_ca_taxon_obscured, param_include_org_obscured, param_include_unobscured]
+        inje.runiNatJurisdictionExportTool(parameters, None)
+    # parameters = [param_project_path, param_input_label, param_date_label, param_province, param_custom_label,
+    #               param_custom_polygon, param_species, param_include_ca_geo_obscured,
+    #               param_include_ca_taxon_obscured, param_include_org_obscured, param_include_unobscured]
+    # inje.runiNatJurisdictionExportTool(parameters, None)
