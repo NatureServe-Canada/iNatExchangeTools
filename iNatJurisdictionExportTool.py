@@ -407,19 +407,17 @@ if __name__ == '__main__':
     inje = iNatJurisdictionExportTool()
     # hard code parameters for debugging
     param_project_path = arcpy.Parameter()
-    param_project_path.value = 'C:/GIS/iNatExchange'
+    param_project_path.value = 'D:/GIS/iNatExchange'
     param_input_label = arcpy.Parameter()
     param_input_label.value = 'inaturalist-canada-5'
     param_date_label = arcpy.Parameter()
-    param_date_label.value = '8Dec2023'
+    param_date_label.value = '4Jun2024'
     param_province = arcpy.Parameter()
     param_province.value = None
     param_custom_label = arcpy.Parameter()
-    param_custom_label.value = 'Ecumene5'
-    #param_custom_label.value = None
+    param_custom_label.value = 'HBJBL'
     param_custom_polygon = arcpy.Parameter()
-    param_custom_polygon.value = 'C:/GIS/iNatExchange/iNatExchange.gdb/CanEcumeneBuffer5'
-    #param_custom_polygon.value = None
+    param_custom_polygon.value = 'D:/GIS/EBAR/HudsonBay.gdb/HBJBL10' # 'C:/GIS/iNatExchange/iNatExchange.gdb/PCA_all' #'C:/GIS/EBAR/KBASites.gdb/KBASite'
     param_species = arcpy.Parameter()
     param_species.value = None # "'Emydoidea blandingii';'Graptemys geographica';'Sternotherus odoratus'"
     #param_include_ca_geo_private = arcpy.Parameter()
@@ -434,7 +432,6 @@ if __name__ == '__main__':
     param_include_org_obscured.value = 'true'
     param_include_unobscured = arcpy.Parameter()
     param_include_unobscured.value = 'true'
-    #for prov in ['YT', 'NT', 'NU', 'BC']:
     # for prov in ['AC', 'QC', 'ON', 'MB', 'SK', 'AB', 'BC', 'YT', 'NT', 'NU']:
     #     param_province.value = prov
     #     parameters = [param_project_path, param_input_label, param_date_label, param_province, param_custom_label,
