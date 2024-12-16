@@ -34,9 +34,12 @@ class iNatEBARExportTool:
 
         # export unobscured observations
         iNatExchangeUtils.displayMessage(messages, 'Exporting observations')
+        arcpy.management.MakeFeatureLayer(tools_path + '/iNatExchangeTools.gdb/JurisdictionBufferWGS84',
+                                          'jurisdictions')
+        # limit to Canada (for iNat Ingestor only)
+        #arcpy.management.SelectLayerByAttribute('jurisdictions', 'NEW_SELECTION', 'JurisdictionID NOT IN (14, 15)')
         arcpy.management.MakeFeatureLayer(observations, 'observations')
-        arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', tools_path +
-                                               '/iNatExchangeTools.gdb/JurisdictionBufferWGS84')
+        arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', 'jurisdictions')
         arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION',
                                                 'private_latitude IS NULL ' +
                                                 "AND (geoprivacy IS NULL OR geoprivacy <> 'private')")
@@ -47,8 +50,7 @@ class iNatEBARExportTool:
                                          '/unobscured_for_ebar_import.csv')
 
         # export obscured observations
-        arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', tools_path +
-                                               '/iNatExchangeTools.gdb/JurisdictionBufferWGS84')
+        arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', 'jurisdictions')
         arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NOT NULL ' +
                                                 "AND (geoprivacy IS NULL OR geoprivacy <> 'private')")
                                                 
@@ -68,7 +70,7 @@ if __name__ == '__main__':
     inee = iNatEBARExportTool()
     # hard code parameters for debugging
     param_project_path = arcpy.Parameter()
-    param_project_path.value = 'C:/GIS/iNatExchange'
+    param_project_path.value = 'D:/GIS/iNatExchange'
     param_input_label = arcpy.Parameter()
     param_input_label.value = 'inaturalist-canada-5'
     parameters = [param_project_path, param_input_label]

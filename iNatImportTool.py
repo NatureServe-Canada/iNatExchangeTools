@@ -118,7 +118,7 @@ if __name__ == '__main__':
     ini = iNatImportTool()
     # hard code parameters for debugging
     param_project_path = arcpy.Parameter()
-    param_project_path.value = 'C:/GIS/iNatExchange'
+    param_project_path.value = 'D:/GIS/iNatExchange'
     param_input_label = arcpy.Parameter()
     param_input_label.value = 'inaturalist-canada-5'
     parameters = [param_project_path, param_input_label]

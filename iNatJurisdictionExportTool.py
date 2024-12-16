@@ -411,13 +411,13 @@ if __name__ == '__main__':
     param_input_label = arcpy.Parameter()
     param_input_label.value = 'inaturalist-canada-5'
     param_date_label = arcpy.Parameter()
-    param_date_label.value = '4Jun2024'
+    param_date_label.value = '6Dec2024'
     param_province = arcpy.Parameter()
     param_province.value = None
     param_custom_label = arcpy.Parameter()
-    param_custom_label.value = 'HBJBL'
+    param_custom_label.value = 'iNatIngestor'
     param_custom_polygon = arcpy.Parameter()
-    param_custom_polygon.value = 'D:/GIS/EBAR/HudsonBay.gdb/HBJBL10' # 'C:/GIS/iNatExchange/iNatExchange.gdb/PCA_all' #'C:/GIS/EBAR/KBASites.gdb/KBASite'
+    param_custom_polygon.value = 'D:/GIS/iNatExchangeTools/iNatExchangeTools.gdb/CanadianJurisdictions' # 'C:/GIS/iNatExchange/iNatExchange.gdb/PCA_all' #'C:/GIS/EBAR/KBASites.gdb/KBASite'
     param_species = arcpy.Parameter()
     param_species.value = None # "'Emydoidea blandingii';'Graptemys geographica';'Sternotherus odoratus'"
     #param_include_ca_geo_private = arcpy.Parameter()
