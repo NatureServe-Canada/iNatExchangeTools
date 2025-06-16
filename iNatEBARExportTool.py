@@ -30,7 +30,9 @@ class iNatEBARExportTool:
         iNatExchangeUtils.project_path = parameters[0].valueAsText
         iNatExchangeUtils.output_path = iNatExchangeUtils.project_path + '/' + iNatExchangeUtils.output_folder
         iNatExchangeUtils.input_label = parameters[1].valueAsText
-        observations = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb/observations'
+        #observations = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb/observations'
+        # limit to pre-extracted HBJBL obs
+        observations = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb/observations_hbjbl'
 
         # export unobscured observations
         iNatExchangeUtils.displayMessage(messages, 'Exporting observations')

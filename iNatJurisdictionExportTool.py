@@ -415,9 +415,9 @@ if __name__ == '__main__':
     param_province = arcpy.Parameter()
     param_province.value = None
     param_custom_label = arcpy.Parameter()
-    param_custom_label.value = 'iNatIngestor'
+    param_custom_label.value = 'PCA_100km' #None # 'iNatIngestor'
     param_custom_polygon = arcpy.Parameter()
-    param_custom_polygon.value = 'D:/GIS/iNatExchangeTools/iNatExchangeTools.gdb/CanadianJurisdictions' # 'C:/GIS/iNatExchange/iNatExchange.gdb/PCA_all' #'C:/GIS/EBAR/KBASites.gdb/KBASite'
+    param_custom_polygon.value = 'D:/GIS/iNatExchange/iNatExchange.gdb/PCA_100km' #None # 'D:/GIS/iNatExchangeTools/iNatExchangeTools.gdb/CanadianJurisdictions' #'C:/GIS/EBAR/KBASites.gdb/KBASite'
     param_species = arcpy.Parameter()
     param_species.value = None # "'Emydoidea blandingii';'Graptemys geographica';'Sternotherus odoratus'"
     #param_include_ca_geo_private = arcpy.Parameter()
@@ -432,7 +432,7 @@ if __name__ == '__main__':
     param_include_org_obscured.value = 'true'
     param_include_unobscured = arcpy.Parameter()
     param_include_unobscured.value = 'true'
-    # for prov in ['AC', 'QC', 'ON', 'MB', 'SK', 'AB', 'BC', 'YT', 'NT', 'NU']:
+    # for prov in ['QC', 'ON', 'MB', 'SK', 'AB', 'BC', 'YT', 'NT', 'NU']: #['AC']:
     #     param_province.value = prov
     #     parameters = [param_project_path, param_input_label, param_date_label, param_province, param_custom_label,
     #                   param_custom_polygon, param_species, param_include_ca_geo_obscured,
