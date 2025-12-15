@@ -30,18 +30,21 @@ class iNatEBARExportTool:
         iNatExchangeUtils.project_path = parameters[0].valueAsText
         iNatExchangeUtils.output_path = iNatExchangeUtils.project_path + '/' + iNatExchangeUtils.output_folder
         iNatExchangeUtils.input_label = parameters[1].valueAsText
-        #observations = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb/observations'
-        # limit to pre-extracted HBJBL obs
-        observations = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb/observations_hbjbl'
+        observations = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb/observations'
+        # # limit to pre-extracted HBJBL obs
+        # observations = iNatExchangeUtils.output_path + '/' + iNatExchangeUtils.input_label + '.gdb/observations_hbjbl'
 
         # export unobscured observations
         iNatExchangeUtils.displayMessage(messages, 'Exporting observations')
         arcpy.management.MakeFeatureLayer(tools_path + '/iNatExchangeTools.gdb/JurisdictionBufferWGS84',
                                           'jurisdictions')
         # limit to Canada (for iNat Ingestor only)
-        #arcpy.management.SelectLayerByAttribute('jurisdictions', 'NEW_SELECTION', 'JurisdictionID NOT IN (14, 15)')
+        arcpy.management.SelectLayerByAttribute('jurisdictions', 'NEW_SELECTION', 'JurisdictionID NOT IN (14, 15)')
         arcpy.management.MakeFeatureLayer(observations, 'observations')
         arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', 'jurisdictions')
+        # # limit to EBAR species of interest
+        # arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION',
+        #                                         'scientific_name IN (SELECT NATIONAL_SCIENTIFIC_NAME FROM NSN)')
         arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION',
                                                 'private_latitude IS NULL ' +
                                                 "AND (geoprivacy IS NULL OR geoprivacy <> 'private')")
@@ -53,9 +56,11 @@ class iNatEBARExportTool:
 
         # export obscured observations
         arcpy.management.SelectLayerByLocation('observations', 'INTERSECT', 'jurisdictions')
+        # # limit to EBAR species of interest
+        # arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION',
+        #                                         'scientific_name IN (SELECT NATIONAL_SCIENTIFIC_NAME FROM NSN)')
         arcpy.management.SelectLayerByAttribute('observations', 'SUBSET_SELECTION', 'private_latitude IS NOT NULL ' +
                                                 "AND (geoprivacy IS NULL OR geoprivacy <> 'private')")
-                                                
         if arcpy.Exists(iNatExchangeUtils.output_path + '/obscured_for_ebar_import.csv'):
             arcpy.Delete_management(iNatExchangeUtils.output_path + '/obscured_for_ebar_import.csv')
         arcpy.conversion.TableToTable('observations', iNatExchangeUtils.output_path, 'obscured_for_ebar_import.csv')

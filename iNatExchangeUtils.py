@@ -26,7 +26,7 @@ prov_dict = {'AC': 'Atlantic Canada',
              'NT': 'Northwest Territories',
              'NU': 'Nunavut'}
 # can be overridden in tools via parameters
-project_path = 'C:/GIS/iNatExchange'
+project_path = 'D:/GIS/iNatExchange'
 input_folder = 'Input'
 input_label = 'inaturalist-ca-5-20210603-1622752843'
 input_path = project_path + '/' + input_folder + '/' + input_label
