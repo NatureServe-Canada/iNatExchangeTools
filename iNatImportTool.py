@@ -40,7 +40,7 @@ class iNatImportTool:
         # import observations, giving preference to private coordinates where available
         iNatExchangeUtils.displayMessage(messages, 'Importing observations')
         arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
-                                      'observations.csv', arcpy.env.workspace, 'obs_temp')
+                                      'observations.csv', arcpy.env.workspace, 'obs_temp', 'id < 620')
         iNatExchangeUtils.displayMessage(messages,
                                          'Plotting observations, preferring private coordinates where available')
         arcpy.management.AddField('obs_temp', 'lon', 'DOUBLE')
@@ -56,8 +56,9 @@ def get_coord(coord, private_coord):
                                         expr)
         arcpy.management.CalculateField('obs_temp', 'lat', 'get_coord(!latitude!, !private_latitude!)', 'PYTHON3',
                                         expr)
-        arcpy.management.CalculateField('obs_temp', 'observed_on_text', "!observed_on!.strftime('%Y-%m-%d')", 'PYTHON3',
-                                        expr)
+        # newer versions of ArcGIS interpret observed_on as Date Only, which Python interprets as Text not as DateTime
+        arcpy.management.CalculateField('obs_temp', 'observed_on_text', '!observed_on!', 'PYTHON3')
+        # arcpy.management.CalculateField('obs_temp', 'observed_on_text', "!observed_on!.strftime('%Y-%m-%d')", 'PYTHON3')
         arcpy.management.XYTableToPoint('obs_temp', 'observations', 'lon', 'lat')
         arcpy.management.Delete('obs_temp')
 
