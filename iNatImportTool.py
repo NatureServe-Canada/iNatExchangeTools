@@ -40,7 +40,7 @@ class iNatImportTool:
         # import observations, giving preference to private coordinates where available
         iNatExchangeUtils.displayMessage(messages, 'Importing observations')
         arcpy.conversion.TableToTable(iNatExchangeUtils.input_path + '/' + iNatExchangeUtils.input_prefix +
-                                      'observations.csv', arcpy.env.workspace, 'obs_temp', 'id < 620')
+                                      'observations.csv', arcpy.env.workspace, 'obs_temp')
         iNatExchangeUtils.displayMessage(messages,
                                          'Plotting observations, preferring private coordinates where available')
         arcpy.management.AddField('obs_temp', 'lon', 'DOUBLE')
@@ -59,7 +59,9 @@ def get_coord(coord, private_coord):
         # newer versions of ArcGIS interpret observed_on as Date Only, which Python interprets as Text not as DateTime
         arcpy.management.CalculateField('obs_temp', 'observed_on_text', '!observed_on!', 'PYTHON3')
         # arcpy.management.CalculateField('obs_temp', 'observed_on_text', "!observed_on!.strftime('%Y-%m-%d')", 'PYTHON3')
-        arcpy.management.XYTableToPoint('obs_temp', 'observations', 'lon', 'lat')
+        arcpy.management.MakeTableView('obs_temp', 'obs_temp_vw', "geoprivacy IS NULL OR geoprivacy <> 'private'")
+        arcpy.management.XYTableToPoint('obs_temp_vw', 'observations', 'lon', 'lat')
+        arcpy.management.Delete('obs_temp_vw')
         arcpy.management.Delete('obs_temp')
 
         # import other tables
