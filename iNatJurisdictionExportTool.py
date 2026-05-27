@@ -83,6 +83,8 @@ class iNatJurisdictionExportTool:
             # Atlantic Canada consistes of four provinces
             if param_province == 'AC':
                 param_province = "'NL', 'NS', 'NB', 'PE'"
+            elif param_province == 'CA':
+                param_province = "'NL', 'NS', 'NB', 'PE', 'QC', 'ON', 'MB', 'SK', 'AB', 'BC', 'YT', 'NT', 'NU'"
             else:
                 param_province = "'" + param_province + "'"
         elif param_custom_label:
@@ -104,15 +106,16 @@ class iNatJurisdictionExportTool:
         iNatExchangeUtils.displayMessage(messages, 'Exporting observations')
         arcpy.management.MakeFeatureLayer('observations', 'obs_lyr')
         if param_province:
-            arcpy.management.SelectLayerByAttribute('obs_lyr', 'NEW_SELECTION', "place_admin1_name = '" + prov_name +
-                                                    "'")
+            if param_province != 'CA':
+                arcpy.management.SelectLayerByAttribute('obs_lyr', 'NEW_SELECTION', "place_admin1_name in '" + prov_name +
+                                                        "'")
             arcpy.management.MakeFeatureLayer(tools_path + '/iNatExchangeTools.gdb/JurisdictionBufferWGS84',
                                               'JurisdictionBuffer')
             arcpy.management.SelectLayerByAttribute('JurisdictionBuffer', 'NEW_SELECTION',
-                                                "JurisdictionAbbreviation IN (" + param_province + ")")
+                                                    "JurisdictionAbbreviation IN (" + param_province + ")")
             arcpy.management.SelectLayerByLocation('obs_lyr', 'INTERSECT', 'JurisdictionBuffer',
                                                    selection_type='ADD_TO_SELECTION')
-            if param_province not in('SK', 'AB', 'YT'):
+            if param_province not in ('SK', 'AB', 'YT'):
                 arcpy.management.MakeFeatureLayer(tools_path + '/iNatExchangeTools.gdb/MarineBufferWGS84',
                                                   'MarineBuffer')
                 arcpy.management.SelectLayerByAttribute('MarineBuffer', 'NEW_SELECTION',
@@ -411,13 +414,14 @@ if __name__ == '__main__':
     param_input_label = arcpy.Parameter()
     param_input_label.value = 'inaturalist-canada-5'
     param_date_label = arcpy.Parameter()
-    param_date_label.value = '6Dec2024'
+    param_date_label.value = '5Dec2025'
     param_province = arcpy.Parameter()
-    param_province.value = None
+    #param_province.value = None
+    param_province.value = 'CA'
     param_custom_label = arcpy.Parameter()
-    param_custom_label.value = 'PCA_100km' #None # 'iNatIngestor'
+    param_custom_label.value = None # 'iNatIngestor' # 'PCA_100km'
     param_custom_polygon = arcpy.Parameter()
-    param_custom_polygon.value = 'D:/GIS/iNatExchange/iNatExchange.gdb/PCA_100km' #None # 'D:/GIS/iNatExchangeTools/iNatExchangeTools.gdb/CanadianJurisdictions' #'C:/GIS/EBAR/KBASites.gdb/KBASite'
+    param_custom_polygon.value = None #'D:/GIS/iNatExchange/iNatExchange.gdb/PCA_100km' 'D:/GIS/iNatExchangeTools/iNatExchangeTools.gdb/CanadianJurisdictions' #'C:/GIS/EBAR/KBASites.gdb/KBASite'
     param_species = arcpy.Parameter()
     param_species.value = None # "'Emydoidea blandingii';'Graptemys geographica';'Sternotherus odoratus'"
     #param_include_ca_geo_private = arcpy.Parameter()
